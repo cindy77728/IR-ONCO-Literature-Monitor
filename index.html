@@ -1436,8 +1436,19 @@ function markSelectedSent() {
 
 // ─── AI SUMMARIZE ─────────────────────────────────────────────────────────────
 // ─── AI API CALL (OpenRouter — free models) ──────────────────────────────────
+// Free model list — openrouter/free auto-selects; fallbacks listed if needed
+const FREE_MODELS = [
+  'openrouter/auto',
+  'meta-llama/llama-3.3-70b-instruct:free',
+  'deepseek/deepseek-r1:free',
+  'qwen/qwen3-8b:free',
+  'mistralai/mistral-7b-instruct:free'
+];
+let modelIndex = 0;
+
 async function callAI(prompt) {
-  if (!apiKey) throw new Error('No API key set');
+  if (!apiKey) throw new Error('No API key — click ⚙ AI Setup to add your free OpenRouter key');
+  const model = FREE_MODELS[modelIndex % FREE_MODELS.length];
   const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
     method: 'POST',
     headers: {
@@ -1447,14 +1458,25 @@ async function callAI(prompt) {
       'X-Title': 'IR Onco Lit Monitor'
     },
     body: JSON.stringify({
-      model: 'meta-llama/llama-3.1-8b-instruct:free',
+      model,
       max_tokens: 1024,
       temperature: 0.4,
       messages: [{ role: 'user', content: prompt }]
     })
   });
   const data = await response.json();
-  if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+  if (data.error) {
+    // If this model is unavailable/paid, try next one
+    const msg = data.error.message || JSON.stringify(data.error);
+    if (msg.includes('unavailable') || msg.includes('paid') || msg.includes('quota')) {
+      modelIndex++;
+      if (modelIndex < FREE_MODELS.length) {
+        console.log(`Switching to fallback model: ${FREE_MODELS[modelIndex]}`);
+        return callAI(prompt); // retry with next model
+      }
+    }
+    throw new Error(msg);
+  }
   return data.choices?.[0]?.message?.content || '';
 }
 
