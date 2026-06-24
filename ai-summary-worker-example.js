@@ -23,7 +23,9 @@ export default {
       body.prompt || "",
       "",
       "Return only JSON with exactly these keys:",
-      '{ "keyMessage": "one sentence", "summary": "short clinician-facing summary with study type, population, main result, and limitation" }'
+      '{ "keyMessage": "one sentence clinical takeaway, not demographics or inclusion criteria", "summary": "short clinician-facing summary with study type, population, main result, clinical relevance, and limitation" }',
+      "",
+      "Prioritize conclusion, outcomes, efficacy, safety, novelty, and practical relevance. Do not use patient criteria or sample-size description as the key message unless that is the main finding."
     ].join("\n");
 
     const openaiResponse = await fetch("https://api.openai.com/v1/responses", {

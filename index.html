@@ -1000,9 +1000,21 @@
     }
 
     function monthYearLabel() {
-      const dateValue = $("endDate").value || $("startDate").value;
-      const date = dateValue ? new Date(`${dateValue}T00:00:00`) : new Date();
-      return date.toLocaleString("en-US", { month: "long", year: "numeric" });
+      const startValue = $("startDate").value;
+      const endValue = $("endDate").value || startValue;
+      const start = startValue ? new Date(`${startValue}T00:00:00`) : null;
+      const end = endValue ? new Date(`${endValue}T00:00:00`) : new Date();
+      if (!start || (start.getMonth() === end.getMonth() && start.getFullYear() === end.getFullYear())) {
+        return end.toLocaleString("en-US", { month: "long", year: "numeric" });
+      }
+      if (start.getFullYear() === end.getFullYear()) {
+        const startMonth = start.toLocaleString("en-US", { month: "long" });
+        const endMonthYear = end.toLocaleString("en-US", { month: "long", year: "numeric" });
+        return `${startMonth}-${endMonthYear}`;
+      }
+      const startLabel = start.toLocaleString("en-US", { month: "long", year: "numeric" });
+      const endLabel = end.toLocaleString("en-US", { month: "long", year: "numeric" });
+      return `${startLabel}-${endLabel}`;
     }
 
     function subjectFocus() {
@@ -1095,22 +1107,41 @@
 
     function draftKeyMessage(article) {
       const abstract = (article.abstract || "").replace(/\s+/g, " ");
-      const conclusionMatch = abstract.match(/(?:CONCLUSIONS?|INTERPRETATION|RESULTS?):\s*([^]+?)(?:\n\n[A-Z ]{3,}:|$)/i);
-      const source = conclusionMatch ? conclusionMatch[1] : abstract;
-      const sentence = source.split(/(?<=[.!?])\s+/).find((part) => part.length > 70) || source.slice(0, 280);
-      return sentence ? sentence.trim().slice(0, 420) : "Review full article for clinical relevance.";
+      const sectionMatch = abstract.match(/(?:CONCLUSIONS?|INTERPRETATION|IMPLICATIONS?|SIGNIFICANCE|RESULTS?):\s*([^]+?)(?:\n\n[A-Z ]{3,}:|$)/i);
+      const source = sectionMatch ? sectionMatch[1] : abstract;
+      const sentences = source
+        .split(/(?<=[.!?])\s+/)
+        .map((part) => part.trim())
+        .filter((part) => part.length > 55);
+      const skipPatterns = [
+        /\b(mean|median)\s+age\b/i,
+        /\b(female|male|patients were included|were included|inclusion criteria|eligibility criteria|retrospective review included)\b/i,
+        /\b(n\s*=\s*\d+|\d+\s*\(\d+\.?\d*%|\d+\s+female|\d+\s+male)\b/i,
+        /\bwe included\b/i
+      ];
+      const priorityPatterns = [
+        /\b(conclud|suggest|demonstrat|showed|associated|improved|reduced|increased|effective|safe|feasible|survival|response|local control|complication|outcome|clinical|significant)\b/i
+      ];
+      const usefulSentence =
+        sentences.find((sentence) => priorityPatterns.some((pattern) => pattern.test(sentence)) && !skipPatterns.some((pattern) => pattern.test(sentence))) ||
+        sentences.find((sentence) => !skipPatterns.some((pattern) => pattern.test(sentence))) ||
+        sentences[0] ||
+        abstract.slice(0, 280);
+      return usefulSentence ? usefulSentence.trim().slice(0, 420) : "Review full article for clinical relevance.";
     }
 
     function buildAiPrompt(article) {
       return `Please summarize this PubMed article for a monthly interventional oncology publication update.
 
 Return:
-1. One-sentence key message for clinicians
+1. One-sentence key message for clinicians. This must be the clinical takeaway, not patient demographics, sample size, eligibility criteria, or methods.
 2. Why it matters
 3. Patient population and study type
 4. Main outcomes
 5. Limitations or cautions
 6. One short email-ready summary
+
+For the email-ready summary, prioritize conclusion, outcomes, efficacy, safety, novelty, and practical relevance. Avoid starting with "Initially, data from..." or only describing patient criteria unless that is the main finding.
 
 Title: ${article.title}
 Journal/date: ${article.journal}, ${article.pubdate}
