@@ -167,7 +167,7 @@
     }
 
     .panel-body {
-      padding: 14px 16px 16px;
+      padding: 12px 16px 16px;
     }
 
     .stats {
@@ -234,8 +234,9 @@
 
     .article-list {
       display: grid;
-      gap: 10px;
-      max-height: 68vh;
+      gap: 8px;
+      max-height: calc(100vh - 250px);
+      min-height: 620px;
       overflow: auto;
       padding-right: 4px;
     }
@@ -244,9 +245,9 @@
       border: 1px solid var(--line);
       border-radius: 8px;
       background: #fff;
-      padding: 12px;
+      padding: 9px 12px;
       display: grid;
-      gap: 10px;
+      gap: 7px;
     }
 
     .article.selected {
@@ -263,8 +264,8 @@
 
     .article h3 {
       margin: 0;
-      font-size: 16px;
-      line-height: 1.28;
+      font-size: 15px;
+      line-height: 1.22;
       letter-spacing: 0;
     }
 
@@ -1030,6 +1031,7 @@
         `).join("")}
         <p>I am available to discuss these publications at our next team meeting or share the full PDF of any article upon request.</p>
         <p>Best regards,<br>Medical Affairs / MSL Team</p>
+        <p><em>Disclaimer: Publication summaries may be generated or assisted by AI based on PubMed abstracts and available citation information. Please review the source article before using the summary for medical, scientific, regulatory, or external communication purposes.</em></p>
       `;
     }
 
@@ -1180,6 +1182,8 @@ ${article.abstract}`;
       lines.push("");
       lines.push("Best regards,");
       lines.push("Medical Affairs / MSL Team");
+      lines.push("");
+      lines.push("Disclaimer: Publication summaries may be generated or assisted by AI based on PubMed abstracts and available citation information. Please review the source article before using the summary for medical, scientific, regulatory, or external communication purposes.");
       return lines.join("\n");
     }
 
