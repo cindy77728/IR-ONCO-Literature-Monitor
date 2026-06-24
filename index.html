@@ -180,6 +180,12 @@
       flex-direction: column;
     }
 
+    .layout > .panel:last-child .panel-body {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+    }
+
     .stats {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -346,6 +352,11 @@
       gap: 12px;
     }
 
+    .layout > .panel:last-child .editor-grid {
+      flex: 1;
+      min-height: 0;
+    }
+
     .selected-title {
       font-size: 18px;
       font-weight: 800;
@@ -378,8 +389,9 @@
       border-radius: 8px;
       padding: 12px;
       background: #fff;
-      min-height: 260px;
-      max-height: 55vh;
+      flex: 1;
+      min-height: 420px;
+      max-height: none;
       overflow: auto;
       line-height: 1.48;
     }
@@ -522,6 +534,8 @@
           <h2>Publications</h2>
           <div class="row-actions">
             <span class="pill" id="resultCount">0 results</span>
+            <button id="tickAllBtn" title="Include all currently visible publications in the email">Tick All</button>
+            <button id="untickAllBtn" title="Remove all currently visible publications from the email">Untick All</button>
             <button class="ghost" id="clearFiltersBtn">Clear Filter</button>
           </div>
         </div>
@@ -923,7 +937,7 @@
         input.addEventListener("change", () => {
           getRecord(input.dataset.include).include = input.checked;
           saveState();
-          renderStatsAndEmail();
+          render();
         });
       });
       document.querySelectorAll("[data-emailed]").forEach((input) => {
@@ -1067,6 +1081,16 @@
       record.notes = $("notes").value;
       saveState();
       renderStatsAndEmail();
+    }
+
+    function setVisibleIncludeState(include) {
+      const visible = getVisibleArticles();
+      visible.forEach((article) => {
+        getRecord(article.pmid).include = include;
+      });
+      saveState();
+      render();
+      showToast(`${visible.length} visible publication${visible.length === 1 ? "" : "s"} ${include ? "included" : "removed from email"}.`);
     }
 
     function draftKeyMessage(article) {
@@ -1265,6 +1289,8 @@ ${article.abstract}`;
         button.addEventListener("click", () => setRelativeRange(button.dataset.rangeDays));
       });
       $("clearFiltersBtn").addEventListener("click", () => { $("filterText").value = ""; state.activeTopic = "all"; render(); });
+      $("tickAllBtn").addEventListener("click", () => setVisibleIncludeState(true));
+      $("untickAllBtn").addEventListener("click", () => setVisibleIncludeState(false));
       $("filterText").addEventListener("input", renderArticles);
       $("emailTitle").addEventListener("input", () => { saveState(); renderEmail(); });
       $("aiEndpoint").addEventListener("input", saveState);
