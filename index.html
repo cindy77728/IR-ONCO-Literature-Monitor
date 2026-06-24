@@ -1,1877 +1,1302 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IR/Onco Lit Monitor — Monthly Publication Digest</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Serif:wght@400;500&display=swap');
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Monthly Publication Update</title>
+  <style>
+    :root {
+      --bg: #f6f7f9;
+      --panel: #ffffff;
+      --ink: #1d2430;
+      --muted: #667085;
+      --line: #d8dde6;
+      --accent: #1f7a8c;
+      --accent-2: #9a3412;
+      --soft: #e8f4f6;
+      --soft-2: #fff2e8;
+      --ok: #16794c;
+      --warn: #b45309;
+      --shadow: 0 16px 35px rgba(20, 31, 45, 0.08);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
 
-  :root {
-    --bg:       #0c0f14;
-    --surface:  #141820;
-    --card:     #1a1f2b;
-    --border:   #252d3d;
-    --border2:  #2e3a50;
-    --text:     #d8dfe8;
-    --muted:    #7a8899;
-    --accent:   #3b82f6;
-    --accent2:  #60a5fa;
-    --green:    #22c55e;
-    --amber:    #f59e0b;
-    --red:      #ef4444;
-    --purple:   #a78bfa;
-    --cyan:     #22d3ee;
-    --teal:     #14b8a6;
+    * { box-sizing: border-box; }
 
-    /* topic colors */
-    --y90:    #3b82f6;
-    --tace:   #a78bfa;
-    --cryo:   #22d3ee;
-  }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        linear-gradient(180deg, rgba(232, 244, 246, 0.9), rgba(246, 247, 249, 0) 320px),
+        var(--bg);
+    }
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    button, input, select, textarea {
+      font: inherit;
+    }
 
-  body {
-    font-family: 'IBM Plex Sans', system-ui, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    font-size: 16px;
-    line-height: 1.7;
-  }
+    button {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--ink);
+      min-height: 38px;
+      border-radius: 8px;
+      padding: 8px 12px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: transform 0.1s ease, border-color 0.1s ease, background 0.1s ease;
+    }
 
-  /* ── HEADER ── */
-  header {
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    padding: 0 24px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 56px;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
-  .logo {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 15px;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    color: var(--accent2);
-    display: flex; align-items: center; gap: 10px;
-  }
-  .logo span { color: var(--muted); font-weight: 400; }
-  .header-right { display: flex; align-items: center; gap: 12px; }
-  .cycle-badge {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 15px;
-    background: rgba(59,130,246,0.12);
-    border: 1px solid rgba(59,130,246,0.3);
-    color: var(--accent2);
-    padding: 3px 10px;
-    border-radius: 4px;
-  }
-  #api-key-btn {
-    background: none;
-    border: 1px solid var(--border2);
-    color: var(--muted);
-    padding: 5px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    font-family: 'IBM Plex Mono', monospace;
-    transition: all 0.15s;
-  }
-  #api-key-btn:hover { border-color: var(--accent); color: var(--accent2); }
+    button:hover { border-color: #9fb0c2; background: #fbfcfd; }
+    button:active { transform: translateY(1px); }
+    button.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+    button.secondary { background: var(--soft-2); border-color: #ffd7b8; color: #7c2d12; }
+    button.ghost { background: transparent; }
+    button.icon { width: 38px; padding: 0; }
+    button:disabled { opacity: 0.55; cursor: not-allowed; }
 
-  /* ── LAYOUT ── */
-  .app { display: flex; height: calc(100vh - 56px); overflow: hidden; }
+    .app {
+      max-width: 1500px;
+      margin: 0 auto;
+      padding: 28px;
+    }
 
-  /* ── SIDEBAR ── */
-  .sidebar {
-    width: 280px;
-    min-width: 280px;
-    background: var(--surface);
-    border-right: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
-  .sidebar-section { padding: 16px; border-bottom: 1px solid var(--border); }
-  .sidebar-label {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 14px;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    color: var(--muted);
-    text-transform: uppercase;
-    margin-bottom: 12px;
-    display: flex; align-items: center; justify-content: space-between;
-  }
+    header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 18px;
+      align-items: end;
+      margin-bottom: 22px;
+    }
 
-  /* Search config */
-  .topic-chip {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 7px 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    border: 1px solid transparent;
-    margin-bottom: 6px;
-    transition: all 0.15s;
-    user-select: none;
-  }
-  .topic-chip:hover { background: rgba(255,255,255,0.04); }
-  .topic-chip.active { border-color: var(--border2); background: rgba(255,255,255,0.04); }
-  .topic-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-  .dot-y90  { background: var(--y90); }
-  .dot-tace { background: var(--tace); }
-  .dot-cryo { background: var(--cryo); }
-  .topic-name { font-size: 15px; color: var(--text); flex: 1; }
-  .topic-count {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 15px;
-    color: var(--muted);
-    background: rgba(255,255,255,0.06);
-    padding: 1px 7px;
-    border-radius: 3px;
-  }
-  .topic-chip input[type=checkbox] { display: none; }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 32px;
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
 
-  /* Date range */
-  .date-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
-  .date-row label { font-size: 15px; color: var(--muted); min-width: 28px; }
-  input[type=date], input[type=text], select, textarea {
-    background: var(--card);
-    border: 1px solid var(--border2);
-    color: var(--text);
-    border-radius: 4px;
-    padding: 7px 10px;
-    font-size: 14px;
-    font-family: 'IBM Plex Mono', monospace;
-    width: 100%;
-    outline: none;
-    transition: border-color 0.15s;
-  }
-  input[type=date]:focus, input[type=text]:focus, select:focus, textarea:focus {
-    border-color: var(--accent);
-  }
-  .quick-range { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 6px; }
-  .qr-btn {
-    font-size: 14px;
-    padding: 3px 8px;
-    border-radius: 3px;
-    border: 1px solid var(--border2);
-    background: none;
-    color: var(--muted);
-    cursor: pointer;
-    font-family: 'IBM Plex Mono', monospace;
-    transition: all 0.12s;
-  }
-  .qr-btn:hover { border-color: var(--accent); color: var(--accent2); }
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      max-width: 820px;
+      line-height: 1.5;
+    }
 
-  /* Search button */
-  #search-btn {
-    width: 100%;
-    background: var(--accent);
-    color: white;
-    border: none;
-    padding: 9px;
-    border-radius: 5px;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    font-family: 'IBM Plex Sans', sans-serif;
-    transition: background 0.15s;
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-    margin-top: 4px;
-  }
-  #search-btn:hover { background: #2563eb; }
-  #search-btn:disabled { background: var(--border2); cursor: not-allowed; }
-  .spinner { display: none; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
+    .toolbar {
+      background: rgba(255, 255, 255, 0.82);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      border-radius: 8px;
+      padding: 14px;
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: 12px;
+      align-items: end;
+      margin-bottom: 18px;
+    }
 
-  /* Stats */
-  .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  .stat-box {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 5px;
-    padding: 8px 10px;
-    text-align: center;
-  }
-  .stat-num {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 22px;
-    font-weight: 600;
-    line-height: 1.1;
-  }
-  .stat-lbl { font-size: 14px; color: var(--muted); margin-top: 2px; }
-  .stat-box.sent .stat-num { color: var(--green); }
-  .stat-box.unsent .stat-num { color: var(--amber); }
-  .stat-box.total .stat-num { color: var(--accent2); }
-  .stat-box.ai .stat-num { color: var(--purple); }
+    label {
+      display: grid;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
 
-  /* Email composer toggle */
-  .compose-btn {
-    width: 100%;
-    background: linear-gradient(135deg, #1d4ed8, #7c3aed);
-    color: white;
-    border: none;
-    padding: 9px;
-    border-radius: 5px;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    font-family: 'IBM Plex Sans', sans-serif;
-    transition: opacity 0.15s;
-  }
-  .compose-btn:hover { opacity: 0.9; }
+    input, select, textarea {
+      width: 100%;
+      color: var(--ink);
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 9px 10px;
+      outline: none;
+    }
 
-  /* ── MAIN ── */
-  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(31, 122, 140, 0.13);
+    }
 
-  /* Toolbar */
-  .toolbar {
-    padding: 10px 20px;
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
-  }
-  .filter-tabs { display: flex; gap: 4px; }
-  .ftab {
-    font-size: 14px;
-    padding: 4px 12px;
-    border-radius: 4px;
-    border: 1px solid var(--border2);
-    background: none;
-    color: var(--muted);
-    cursor: pointer;
-    font-family: 'IBM Plex Mono', monospace;
-    transition: all 0.12s;
-  }
-  .ftab:hover { color: var(--text); }
-  .ftab.active { background: rgba(59,130,246,0.15); border-color: var(--accent); color: var(--accent2); }
-  .toolbar-sep { width: 1px; height: 20px; background: var(--border); }
-  #search-filter {
-    flex: 1;
-    min-width: 180px;
-    max-width: 300px;
-    padding: 5px 10px;
-    font-size: 14px;
-  }
-  .sort-select { width: auto; font-size: 14px; }
-  .toolbar-right { margin-left: auto; display: flex; gap: 8px; }
-  .icon-btn {
-    background: none;
-    border: 1px solid var(--border2);
-    color: var(--muted);
-    padding: 5px 10px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: all 0.12s;
-    display: flex; align-items: center; gap: 5px;
-  }
-  .icon-btn:hover { border-color: var(--accent); color: var(--accent2); }
-  .icon-btn.danger:hover { border-color: var(--red); color: var(--red); }
+    textarea {
+      min-height: 96px;
+      resize: vertical;
+      line-height: 1.45;
+    }
 
-  /* ── ARTICLES LIST ── */
-  .articles-pane {
-    flex: 1;
-    overflow-y: auto;
-    padding: 16px 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  .articles-pane::-webkit-scrollbar { width: 6px; }
-  .articles-pane::-webkit-scrollbar-track { background: transparent; }
-  .articles-pane::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+    .span-2 { grid-column: span 2; }
+    .span-3 { grid-column: span 3; }
+    .span-4 { grid-column: span 4; }
+    .span-5 { grid-column: span 5; }
+    .span-6 { grid-column: span 6; }
 
-  .empty-state {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    color: var(--muted);
-    text-align: center;
-    padding: 40px;
-  }
-  .empty-icon { font-size: 36px; opacity: 0.4; }
-  .empty-title { font-size: 18px; color: var(--text); font-weight: 500; }
-  .empty-sub { font-size: 15px; max-width: 320px; }
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(380px, 0.75fr);
+      gap: 18px;
+      align-items: start;
+    }
 
-  /* Article card */
-  .article-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 7px;
-    padding: 14px 16px;
-    transition: border-color 0.15s;
-    cursor: default;
-    position: relative;
-  }
-  .article-card:hover { border-color: var(--border2); }
-  .article-card.expanded { border-color: var(--border2); }
-  .article-card.sent-card { border-left: 3px solid var(--green); }
-  .article-card.selected { border-color: var(--accent); background: rgba(59,130,246,0.06); }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      min-width: 0;
+    }
 
-  .card-top { display: flex; align-items: flex-start; gap: 12px; }
-  .card-checkbox { margin-top: 2px; accent-color: var(--accent); cursor: pointer; flex-shrink: 0; }
-  .card-meta { flex: 1; min-width: 0; }
-  .card-tags { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin-bottom: 6px; }
-  .tag {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 14px;
-    font-weight: 600;
-    padding: 2px 8px;
-    border-radius: 3px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-  }
-  .tag-y90   { background: rgba(59,130,246,0.18); color: #93c5fd; }
-  .tag-tace  { background: rgba(167,139,250,0.18); color: #c4b5fd; }
-  .tag-cryo  { background: rgba(34,211,238,0.18); color: #67e8f9; }
-  .tag-new   { background: rgba(34,197,94,0.18); color: #86efac; }
-  .tag-sent  { background: rgba(34,197,94,0.12); color: #86efac; border: 1px solid rgba(34,197,94,0.25); }
-  .tag-unsent{ background: rgba(245,158,11,0.12); color: #fcd34d; border: 1px solid rgba(245,158,11,0.25); }
+    .panel-head {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
 
-  .article-title {
-    font-size: 15.5px;
-    font-weight: 500;
-    color: var(--text);
-    line-height: 1.45;
-    margin-bottom: 5px;
-    cursor: pointer;
-  }
-  .article-title:hover { color: var(--accent2); }
-  .article-authors {
-    font-size: 15.5px;
-    color: var(--muted);
-    margin-bottom: 4px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .article-journal {
-    font-size: 15px;
-    color: var(--muted);
-    font-style: italic;
-  }
-  .card-right { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; flex-shrink: 0; }
-  .article-date {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 15px;
-    color: var(--muted);
-  }
-  .card-actions { display: flex; gap: 6px; }
-  .act-btn {
-    font-size: 15px;
-    padding: 3px 9px;
-    border-radius: 3px;
-    border: 1px solid var(--border2);
-    background: none;
-    color: var(--muted);
-    cursor: pointer;
-    font-family: 'IBM Plex Mono', monospace;
-    transition: all 0.12s;
-    white-space: nowrap;
-  }
-  .act-btn:hover { border-color: var(--accent); color: var(--accent2); }
-  .act-btn.summarize-btn:hover { border-color: var(--purple); color: var(--purple); }
-  .act-btn.sent-btn { color: var(--green); border-color: rgba(34,197,94,0.3); }
-  .act-btn.sent-btn:hover { background: rgba(34,197,94,0.1); }
-  .act-btn.mark-sent { color: var(--amber); border-color: rgba(245,158,11,0.3); }
-  .act-btn.mark-sent:hover { background: rgba(245,158,11,0.1); color: var(--amber); }
+    .panel-head h2 {
+      margin: 0;
+      font-size: 17px;
+      letter-spacing: 0;
+    }
 
-  /* Expandable content */
-  .card-body {
-    display: none;
-    margin-top: 12px;
-    padding-top: 12px;
-    border-top: 1px solid var(--border);
-  }
-  .card-body.open { display: block; }
-  .abstract-text {
-    font-size: 14.5px;
-    color: #b0b8c8;
-    line-height: 1.65;
-    margin-bottom: 12px;
-  }
-  .ai-summary-box {
-    background: rgba(167,139,250,0.08);
-    border: 1px solid rgba(167,139,250,0.2);
-    border-radius: 5px;
-    padding: 12px 14px;
-    margin-bottom: 12px;
-  }
-  .ai-summary-label {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 14px;
-    color: var(--purple);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    font-weight: 600;
-    margin-bottom: 6px;
-    display: flex; align-items: center; gap: 6px;
-  }
-  .ai-summary-text {
-    font-size: 14.5px;
-    color: #d4bff9;
-    line-height: 1.6;
-    white-space: pre-line;
-  }
-  .key-findings {
-    background: rgba(59,130,246,0.08);
-    border: 1px solid rgba(59,130,246,0.2);
-    border-radius: 5px;
-    padding: 12px 14px;
-    margin-bottom: 10px;
-  }
-  .key-findings-label {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 14px;
-    color: var(--accent2);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    font-weight: 600;
-    margin-bottom: 6px;
-  }
-  .key-findings-text { font-size: 14.5px; color: #93c5fd; line-height: 1.6; white-space: pre-line; }
-  .card-links { display: flex; gap: 8px; }
-  .card-link {
-    font-size: 15px;
-    color: var(--accent2);
-    text-decoration: none;
-    font-family: 'IBM Plex Mono', monospace;
-    padding: 3px 9px;
-    border: 1px solid rgba(59,130,246,0.25);
-    border-radius: 3px;
-    transition: all 0.12s;
-  }
-  .card-link:hover { background: rgba(59,130,246,0.1); }
-  .sent-note {
-    font-size: 15px;
-    color: var(--green);
-    font-family: 'IBM Plex Mono', monospace;
-    margin-top: 8px;
-  }
+    .panel-body {
+      padding: 14px 16px 16px;
+    }
 
-  /* ── EMAIL MODAL ── */
-  .modal-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.7);
-    z-index: 200;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-  }
-  .modal-overlay.open { display: flex; }
-  .modal {
-    background: var(--surface);
-    border: 1px solid var(--border2);
-    border-radius: 10px;
-    width: 100%;
-    max-width: 720px;
-    max-height: 88vh;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
-  .modal-header {
-    padding: 16px 20px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .modal-title {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text);
-    display: flex; align-items: center; gap: 8px;
-  }
-  .close-btn {
-    background: none;
-    border: none;
-    color: var(--muted);
-    font-size: 18px;
-    cursor: pointer;
-    padding: 4px 8px;
-    border-radius: 4px;
-    transition: color 0.12s;
-  }
-  .close-btn:hover { color: var(--text); }
-  .modal-body { padding: 20px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 14px; }
-  .field-label { font-size: 15px; color: var(--muted); margin-bottom: 5px; font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.06em; }
-  .field-label.required::after { content: ' *'; color: var(--red); }
-  textarea.email-body { min-height: 260px; font-family: 'IBM Plex Mono', monospace; font-size: 14px; resize: vertical; }
-  .modal-footer {
-    padding: 14px 20px;
-    border-top: 1px solid var(--border);
-    display: flex;
-    gap: 10px;
-    justify-content: flex-end;
-    align-items: center;
-  }
-  .btn-primary {
-    background: linear-gradient(135deg, #1d4ed8, #7c3aed);
-    color: white;
-    border: none;
-    padding: 8px 20px;
-    border-radius: 5px;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    font-family: 'IBM Plex Sans', sans-serif;
-    transition: opacity 0.15s;
-  }
-  .btn-primary:hover { opacity: 0.9; }
-  .btn-secondary {
-    background: none;
-    border: 1px solid var(--border2);
-    color: var(--text);
-    padding: 8px 16px;
-    border-radius: 5px;
-    font-size: 15px;
-    cursor: pointer;
-    font-family: 'IBM Plex Sans', sans-serif;
-    transition: all 0.12s;
-  }
-  .btn-secondary:hover { border-color: var(--accent); color: var(--accent2); }
-  .generate-email-btn {
-    background: rgba(167,139,250,0.12);
-    border: 1px solid rgba(167,139,250,0.3);
-    color: var(--purple);
-    padding: 7px 14px;
-    border-radius: 5px;
-    font-size: 14px;
-    cursor: pointer;
-    font-family: 'IBM Plex Mono', monospace;
-    transition: all 0.15s;
-    display: flex; align-items: center; gap: 6px;
-  }
-  .generate-email-btn:hover { background: rgba(167,139,250,0.2); }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 12px;
+    }
 
-  /* API Key Modal */
-  .api-modal { max-width: 420px; }
-  .api-modal .modal-body { gap: 10px; }
-  .api-note { font-size: 15.5px; color: var(--muted); line-height: 1.5; }
-  .api-note a { color: var(--accent2); }
+    .stat {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      background: #fbfcfd;
+    }
 
-  /* ── TOAST ── */
-  #toast {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    background: var(--card);
-    border: 1px solid var(--border2);
-    color: var(--text);
-    padding: 10px 18px;
-    border-radius: 6px;
-    font-size: 15px;
-    z-index: 300;
-    opacity: 0;
-    transform: translateY(8px);
-    transition: all 0.2s;
-    pointer-events: none;
-    font-family: 'IBM Plex Mono', monospace;
-  }
-  #toast.show { opacity: 1; transform: translateY(0); }
-  #toast.success { border-color: rgba(34,197,94,0.4); color: var(--green); }
-  #toast.error { border-color: rgba(239,68,68,0.4); color: var(--red); }
+    .stat strong {
+      display: block;
+      font-size: 22px;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
 
-  /* Loading skeleton */
-  .skeleton {
-    background: linear-gradient(90deg, var(--card) 25%, var(--border) 50%, var(--card) 75%);
-    background-size: 200% 100%;
-    animation: shimmer 1.2s infinite;
-    border-radius: 4px;
-    height: 14px;
-    margin-bottom: 8px;
-  }
-  @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-  .skeleton-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 7px;
-    padding: 14px 16px;
-  }
+    .stat span {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
 
-  /* Scrollbar */
-  .modal-body::-webkit-scrollbar { width: 5px; }
-  .modal-body::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
 
-  /* Progress bar */
-  .progress-bar {
-    height: 2px;
-    background: var(--border);
-    border-radius: 1px;
-    overflow: hidden;
-    margin-top: 8px;
-  }
-  .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--accent), var(--purple));
-    border-radius: 1px;
-    transition: width 0.3s;
-    width: 0%;
-  }
+    .quick-ranges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
 
+    .quick-ranges button {
+      min-height: 34px;
+      padding: 6px 10px;
+    }
 
-  /* ── DIGEST PANEL ── */
-  .digest-panel {
-    width: 380px; min-width: 380px;
-    background: var(--surface);
-    border-left: 1px solid var(--border);
-    display: flex; flex-direction: column; overflow: hidden;
-  }
-  .digest-header {
-    padding: 14px 16px 10px; border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .digest-title {
-    font-family: 'IBM Plex Mono', monospace; font-size: 15px; font-weight: 600;
-    letter-spacing: 0.1em; color: var(--purple); text-transform: uppercase;
-    display: flex; align-items: center; gap: 7px;
-  }
-  .digest-count-badge {
-    background: rgba(167,139,250,0.2); color: var(--purple);
-    border-radius: 10px; padding: 1px 8px; font-size: 15px;
-  }
-  .digest-clear-btn {
-    font-size: 15px; color: var(--muted); background: none; border: none; cursor: pointer;
-    font-family: 'IBM Plex Mono', monospace; padding: 2px 6px; border-radius: 3px;
-  }
-  .digest-clear-btn:hover { color: var(--red); }
-  .digest-queue {
-    flex: 1; overflow-y: auto; padding: 10px 12px;
-    display: flex; flex-direction: column; gap: 6px;
-  }
-  .digest-queue::-webkit-scrollbar { width: 4px; }
-  .digest-queue::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
-  .digest-empty {
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    height: 100%; gap: 8px; color: var(--muted); text-align: center; padding: 20px;
-  }
-  .digest-empty-icon { font-size: 28px; opacity: 0.3; }
-  .digest-empty-text { font-size: 14px; line-height: 1.5; }
-  .queue-item {
-    background: var(--card); border: 1px solid var(--border); border-radius: 5px;
-    padding: 8px 10px; display: flex; gap: 8px; align-items: flex-start;
-  }
-  .queue-dot { width: 6px; height: 6px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
-  .queue-item-meta { flex: 1; min-width: 0; }
-  .queue-item-title {
-    font-size: 15.5px; color: var(--text); line-height: 1.35;
-    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-    margin-bottom: 3px;
-  }
-  .queue-item-sub { font-size: 14.5px; color: var(--muted); }
-  .queue-remove {
-    background: none; border: none; color: var(--muted); cursor: pointer;
-    font-size: 14px; padding: 0 2px; line-height: 1; flex-shrink: 0; transition: color 0.12s;
-  }
-  .queue-remove:hover { color: var(--red); }
-  .digest-output-section {
-    border-top: 1px solid var(--border); display: flex; flex-direction: column;
-    padding: 12px; gap: 8px;
-  }
-  .digest-subject-row { display: flex; gap: 6px; align-items: center; }
-  .digest-subject-label { font-size: 14px; color: var(--muted); white-space: nowrap; font-family: 'IBM Plex Mono', monospace; }
-  #digest-subject { font-size: 15.5px; padding: 4px 8px; }
-  #digest-output {
-    width: 100%; min-height: 320px; max-height: 520px;
-    font-size: 15.5px; font-family: 'IBM Plex Mono', monospace; line-height: 1.55;
-    resize: vertical; background: var(--bg); border: 1px solid var(--border2);
-    color: var(--text); border-radius: 4px; padding: 10px; outline: none;
-  }
-  #digest-output:focus { border-color: var(--purple); }
-  .digest-actions { display: flex; gap: 6px; }
-  .gen-btn {
-    flex: 1; background: linear-gradient(135deg, rgba(124,58,237,0.9), rgba(59,130,246,0.9));
-    color: white; border: none; padding: 9px 10px; border-radius: 5px;
-    font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'IBM Plex Sans', sans-serif;
-    transition: opacity 0.15s; display: flex; align-items: center; justify-content: center; gap: 6px;
-  }
-  .gen-btn:hover { opacity: 0.85; }
-  .gen-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-  .copy-btn {
-    background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.3);
-    color: var(--green); padding: 9px 14px; border-radius: 5px;
-    font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'IBM Plex Mono', monospace;
-    transition: all 0.15s; white-space: nowrap;
-  }
-  .copy-btn:hover { background: rgba(34,197,94,0.25); }
-  .copy-btn.copied { background: rgba(34,197,94,0.3); border-color: rgba(34,197,94,0.6); }
-  .mail-btn {
-    background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.3);
-    color: var(--accent2); padding: 9px 11px; border-radius: 5px;
-    font-size: 15px; cursor: pointer; transition: all 0.15s;
-  }
-  .mail-btn:hover { background: rgba(59,130,246,0.2); }
-  .digest-format-row { display: flex; gap: 5px; align-items: center; }
-  .fmt-btn {
-    font-family: 'IBM Plex Mono', monospace; font-size: 14px; padding: 2px 8px;
-    border-radius: 3px; border: 1px solid var(--border2); background: none;
-    color: var(--muted); cursor: pointer; transition: all 0.12s;
-  }
-  .fmt-btn.active { border-color: var(--purple); color: var(--purple); background: rgba(167,139,250,0.1); }
-  .digest-gen-status { font-size: 14.5px; color: var(--purple); font-family: 'IBM Plex Mono', monospace; min-height: 14px; }
-  .add-digest-btn {
-    font-size: 14.5px; padding: 2px 8px; border-radius: 3px;
-    border: 1px solid rgba(167,139,250,0.35); background: rgba(167,139,250,0.08);
-    color: var(--purple); cursor: pointer; font-family: 'IBM Plex Mono', monospace;
-    transition: all 0.12s; white-space: nowrap;
-  }
-  .add-digest-btn:hover { background: rgba(167,139,250,0.18); }
-  .add-digest-btn.in-digest { border-color: rgba(34,197,94,0.35); background: rgba(34,197,94,0.08); color: var(--green); }
+    .tab {
+      border-radius: 999px;
+      min-height: 34px;
+      padding: 6px 12px;
+      color: var(--muted);
+    }
 
-  /* Responsive */
-  @media (max-width: 700px) {
-    .sidebar { display: none; }
-    .sidebar.mobile-open { display: flex; position: fixed; z-index: 150; height: calc(100vh - 56px); top: 56px; left: 0; width: 280px; }
-  }
-</style>
+    .tab.active {
+      background: var(--soft);
+      border-color: #b6dce2;
+      color: #135c6b;
+      font-weight: 700;
+    }
+
+    .article-list {
+      display: grid;
+      gap: 10px;
+      max-height: 68vh;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .article {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 12px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .article.selected {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(31, 122, 140, 0.12);
+    }
+
+    .article-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .article h3 {
+      margin: 0;
+      font-size: 16px;
+      line-height: 1.28;
+      letter-spacing: 0;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 4px 8px;
+      background: #fbfcfd;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .pill.sent { color: var(--ok); background: #ecfdf3; border-color: #bbf7d0; }
+    .pill.unsent { color: var(--warn); background: #fff7ed; border-color: #fed7aa; }
+    .pill.topic { color: #135c6b; background: var(--soft); border-color: #b6dce2; }
+
+    .row-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .article input[type="checkbox"], .editor-grid input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent);
+    }
+
+    .checkline {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: none;
+      letter-spacing: 0;
+    }
+
+    .empty {
+      padding: 30px 18px;
+      color: var(--muted);
+      text-align: center;
+      border: 1px dashed var(--line);
+      border-radius: 8px;
+      background: #fbfcfd;
+    }
+
+    .editor-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .selected-title {
+      font-size: 18px;
+      font-weight: 800;
+      line-height: 1.25;
+    }
+
+    .abstract {
+      white-space: pre-wrap;
+      max-height: 190px;
+      overflow: auto;
+      border: 1px solid var(--line);
+      background: #fbfcfd;
+      border-radius: 8px;
+      padding: 10px;
+      color: #344054;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .email-tools {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 8px;
+      align-items: end;
+      margin-bottom: 10px;
+    }
+
+    .email-preview {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fff;
+      min-height: 260px;
+      max-height: 55vh;
+      overflow: auto;
+      line-height: 1.48;
+    }
+
+    .email-preview h3 {
+      margin: 18px 0 8px;
+      font-size: 17px;
+    }
+
+    .email-preview h3:first-child { margin-top: 0; }
+    .email-preview p { margin: 7px 0; }
+    .email-preview ol { padding-left: 24px; margin: 8px 0 12px; }
+    .email-preview li { margin-bottom: 12px; }
+
+    .notice {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+      background: #fbfcfd;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+    }
+
+    .toast {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      background: #111827;
+      color: #fff;
+      padding: 10px 13px;
+      border-radius: 8px;
+      opacity: 0;
+      transform: translateY(10px);
+      pointer-events: none;
+      transition: opacity 0.18s ease, transform 0.18s ease;
+      z-index: 20;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .loader {
+      display: none;
+      gap: 8px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .loader.show { display: inline-flex; }
+
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid #c9d3df;
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 1120px) {
+      .layout { grid-template-columns: 1fr; }
+      .article-list { max-height: none; }
+    }
+
+    @media (max-width: 760px) {
+      .app { padding: 18px; }
+      header { grid-template-columns: 1fr; }
+      .toolbar { grid-template-columns: 1fr 1fr; }
+      .span-2, .span-3, .span-4, .span-5, .span-6 { grid-column: span 2; }
+      .stats { grid-template-columns: 1fr 1fr; }
+      .email-tools { grid-template-columns: 1fr; }
+      .article-top { display: grid; }
+    }
+  </style>
 </head>
 <body>
-
-<!-- API Key Modal -->
-<div class="modal-overlay" id="api-modal-overlay">
-  <div class="modal api-modal">
-    <div class="modal-header">
-      <div class="modal-title">⚙ AI Setup (Free)</div>
-      <button class="close-btn" onclick="closeApiModal()">✕</button>
-    </div>
-    <div class="modal-body">
-      <p class="api-note" style="color:var(--green);border:1px solid rgba(34,197,94,0.2);background:rgba(34,197,94,0.07);padding:8px 10px;border-radius:5px;">
-        ✓ Uses <strong>OpenRouter</strong> — free models, works in all regions including APAC.
-      </p>
-      <div style="margin-top:4px;">
-        <div class="field-label required">OpenRouter API Key</div>
-        <input type="password" id="api-key-input" placeholder="sk-or-v1-..." />
+  <main class="app">
+    <header>
+      <div>
+        <h1>Monthly Publication Update</h1>
+        <p class="subtitle">Search PubMed for Y90, DEB-TACE, and cryoablation, curate the papers worth sharing, track what was already emailed, and copy a clean update into Outlook or Gmail.</p>
       </div>
-      <div style="margin-top:6px;">
-        <p class="api-note">
-          <strong>How to get a free key (2 minutes):</strong><br>
-          1. Go to <a href="https://openrouter.ai/keys" target="_blank">openrouter.ai/keys →</a><br>
-          2. Sign up with Google or email<br>
-          3. Click <strong>Create Key</strong> → copy it<br>
-          4. Paste it above and save<br><br>
-          Free models used: <strong>Llama 3.1 8B</strong> (summaries) · No credit card needed.
-        </p>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn-secondary" onclick="closeApiModal()">Cancel</button>
-      <button class="btn-primary" onclick="saveApiKey()">Save Key</button>
-    </div>
-  </div>
-</div>
+      <div class="loader" id="loader"><span class="spinner"></span><span id="loaderText">Searching PubMed</span></div>
+    </header>
 
-
-
-<!-- Header -->
-<header>
-  <div class="logo">
-    IR/ONCO <span>LIT MONITOR</span>
-  </div>
-  <div class="header-right">
-    <div class="cycle-badge" id="cycle-label">Loading...</div>
-    <button id="api-key-btn" onclick="openApiModal()">⚙ AI Setup</button>
-  </div>
-</header>
-
-<div class="app">
-  <!-- Sidebar -->
-  <div class="sidebar">
-    <!-- Topics -->
-    <div class="sidebar-section">
-      <div class="sidebar-label">Search Topics</div>
-      <label class="topic-chip active" id="chip-y90">
-        <input type="checkbox" value="y90" checked onchange="toggleTopic(this)">
-        <span class="topic-dot dot-y90"></span>
-        <span class="topic-name">Y90 / TARE / SIRT</span>
-        <span class="topic-count" id="count-y90">0</span>
+    <section class="toolbar" aria-label="Search controls">
+      <label class="span-2">Start date
+        <input id="startDate" type="date" />
       </label>
-      <label class="topic-chip active" id="chip-tace">
-        <input type="checkbox" value="tace" checked onchange="toggleTopic(this)">
-        <span class="topic-dot dot-tace"></span>
-        <span class="topic-name">DEB-TACE</span>
-        <span class="topic-count" id="count-tace">0</span>
+      <label class="span-2">End date
+        <input id="endDate" type="date" />
       </label>
-      <label class="topic-chip active" id="chip-cryo">
-        <input type="checkbox" value="cryo" checked onchange="toggleTopic(this)">
-        <span class="topic-dot dot-cryo"></span>
-        <span class="topic-name">Cryo Ablation</span>
-        <span class="topic-count" id="count-cryo">0</span>
+      <label class="span-2">Max per topic
+        <select id="retmax">
+          <option>10</option>
+          <option selected>20</option>
+          <option>50</option>
+          <option>100</option>
+        </select>
       </label>
-    </div>
-
-    <!-- Date range -->
-    <div class="sidebar-section">
-      <div class="sidebar-label">Date Range</div>
-      <div class="date-row">
-        <label>From</label>
-        <input type="date" id="date-from" />
+      <label class="span-3">Extra PubMed terms
+        <input id="extraTerms" placeholder="Optional: HCC, liver tumor, etc." />
+      </label>
+      <label class="span-3">Filter results
+        <input id="filterText" placeholder="Title, journal, author, PMID..." />
+      </label>
+      <div class="span-6 quick-ranges" aria-label="Quick time frame">
+        <button data-range-days="7">7 Days</button>
+        <button data-range-days="30">1 Month</button>
+        <button data-range-days="90">3 Months</button>
+        <button data-range-days="180">6 Months</button>
+        <button data-range-days="365">1 Year</button>
+        <button id="lastMonthBtn" title="Set dates to previous calendar month">Previous Month</button>
+        <button id="thisMonthBtn" title="Set dates to current month">This Month</button>
       </div>
-      <div class="date-row">
-        <label>To</label>
-        <input type="date" id="date-to" />
+      <div class="span-6 row-actions">
+        <button class="primary" id="searchBtn" title="Search PubMed">Search PubMed</button>
+        <button id="exportBtn" title="Download tracking data as JSON">Export</button>
+        <button id="importBtn" title="Import previously exported tracking JSON">Import</button>
+        <input id="importFile" type="file" accept="application/json" hidden />
       </div>
-      <div class="quick-range">
-        <button class="qr-btn" onclick="setRange(-7)">7 days</button>
-        <button class="qr-btn" onclick="setRange(1)">1 mo</button>
-        <button class="qr-btn" onclick="setRange(3)">3 mo</button>
-        <button class="qr-btn" onclick="setRange(6)">6 mo</button>
-        <button class="qr-btn" onclick="setRange(12)">1 yr</button>
-        <button class="qr-btn" onclick="setRange(0)">This mo</button>
-      </div>
-    </div>
+      <label class="span-6">AI summary endpoint URL
+        <input id="aiEndpoint" placeholder="Optional secure endpoint, e.g. https://your-worker.example.com/summarize" />
+      </label>
+      <div class="span-6 notice">For automatic AI summaries, use a secure backend endpoint that stores the API key server-side. Do not put an OpenAI or company AI key directly into a public GitHub Pages HTML file.</div>
+    </section>
 
-    <!-- Max results -->
-    <div class="sidebar-section">
-      <div class="sidebar-label">Results per Topic</div>
-      <select id="max-results">
-        <option value="10">10 articles</option>
-        <option value="20" selected>20 articles</option>
-        <option value="30">30 articles</option>
-        <option value="50">50 articles</option>
-      </select>
-    </div>
-
-    <!-- Search -->
-    <div class="sidebar-section">
-      <button id="search-btn" onclick="runSearch()">
-        <div class="spinner" id="search-spinner"></div>
-        <span id="search-label">🔍 Search PubMed</span>
-      </button>
-      <div class="progress-bar" id="progress-bar" style="display:none;">
-        <div class="progress-fill" id="progress-fill"></div>
-      </div>
-    </div>
-
-    <!-- Stats -->
-    <div class="sidebar-section">
-      <div class="sidebar-label">This Cycle</div>
-      <div class="stat-grid">
-        <div class="stat-box total"><div class="stat-num" id="stat-total">0</div><div class="stat-lbl">Total</div></div>
-        <div class="stat-box ai"><div class="stat-num" id="stat-ai">0</div><div class="stat-lbl">Summarized</div></div>
-        <div class="stat-box sent"><div class="stat-num" id="stat-sent">0</div><div class="stat-lbl">Emailed</div></div>
-        <div class="stat-box unsent"><div class="stat-num" id="stat-unsent">0</div><div class="stat-lbl">Pending</div></div>
-      </div>
-    </div>
-
-    <!-- Compose hint -->
-    <div class="sidebar-section" style="margin-top:auto;">
-      <div style="font-size:11px; color:var(--muted); line-height:1.5; text-align:center; padding:4px 0;">
-        ✦ Check articles to add them to the <span style="color:var(--purple);">Digest Panel →</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- Main -->
-  <div class="main">
-    <!-- Toolbar -->
-    <div class="toolbar">
-      <div class="filter-tabs">
-        <button class="ftab active" onclick="filterArticles('all',this)">All</button>
-        <button class="ftab" onclick="filterArticles('unsent',this)">Unsent</button>
-        <button class="ftab" onclick="filterArticles('sent',this)">Sent</button>
-        <button class="ftab" onclick="filterArticles('summarized',this)">Summarized</button>
-      </div>
-      <div class="toolbar-sep"></div>
-      <input type="text" id="search-filter" placeholder="Filter by title, author, journal…" oninput="filterByText(this.value)" />
-      <select class="sort-select" onchange="sortArticles(this.value)">
-        <option value="date-desc">Newest first</option>
-        <option value="date-asc">Oldest first</option>
-        <option value="topic">By topic</option>
-        <option value="journal">By journal</option>
-      </select>
-      <div class="toolbar-right">
-        <button class="icon-btn" onclick="summarizeSelected()">✦ Summarize selected</button>
-        <button class="icon-btn" onclick="markSelectedSent()">✓ Mark sent</button>
-        <button class="icon-btn danger" onclick="clearAll()">✕ Clear</button>
-      </div>
-    </div>
-
-    <!-- Articles -->
-    <div class="articles-pane" id="articles-pane">
-      <div class="empty-state" id="empty-state">
-        <div class="empty-icon">📡</div>
-        <div class="empty-title">No articles loaded yet</div>
-        <div class="empty-sub">Select your topics and date range, then click Search PubMed to pull the latest literature.</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Digest Panel -->
-  <div class="digest-panel">
-    <div class="digest-header">
-      <div class="digest-title">
-        ✉ Digest Queue
-        <span class="digest-count-badge" id="digest-count">0</span>
-      </div>
-      <button class="digest-clear-btn" onclick="clearDigestQueue()">clear all</button>
-    </div>
-
-    <div class="digest-queue" id="digest-queue">
-      <div class="digest-empty">
-        <div class="digest-empty-icon">✉</div>
-        <div class="digest-empty-text">Check articles on the left to add them here, then generate your digest email.</div>
-      </div>
-    </div>
-
-    <div class="digest-output-section">
-      <div class="digest-subject-row">
-        <span class="digest-subject-label">SUBJECT</span>
-        <input type="text" id="digest-subject" placeholder="Monthly IR/Onco Literature Update" />
-      </div>
-
-      <div class="digest-format-row">
-        <span style="font-size:10px;color:var(--muted);margin-right:3px;">Format:</span>
-        <button class="fmt-btn active" onclick="setFormat('email',this)">Email</button>
-        <button class="fmt-btn" onclick="setFormat('bullet',this)">Bullet summary</button>
-        <button class="fmt-btn" onclick="setFormat('table',this)">Reference list</button>
-      </div>
-
-      <textarea id="digest-output" placeholder="Your digest will appear here — ready to copy and paste into any email client or Teams message."></textarea>
-
-      <div class="digest-gen-status" id="digest-gen-status"></div>
-
-      <div class="digest-actions">
-        <button class="gen-btn" id="gen-btn" onclick="generateDigest()">
-          <span id="gen-spinner" class="spinner" style="display:none;"></span>
-          <span id="gen-label">✦ Generate</span>
-        </button>
-        <button class="copy-btn" id="copy-btn" onclick="copyDigest()">📋 Copy</button>
-        <button class="mail-btn" title="Open in mail client" onclick="openDigestInMail()">✉</button>
-      </div>
-    </div>
-  </div>
-
-</div>
-
-<div id="toast"></div>
-
-<script>
-// ─── STATE ───────────────────────────────────────────────────────────────────
-let articles = [];
-let filteredArticles = [];
-let currentFilter = 'all';
-let currentSort = 'date-desc';
-let textFilter = '';
-let apiKey = localStorage.getItem('openrouterApiKey') || '';
-
-const TOPICS = {
-  y90:  { label: 'Y90/TARE', query: 'Y90 radioembolization SIRT TARE hepatocellular carcinoma liver', color: 'y90' },
-  tace: { label: 'DEB-TACE', query: 'DEB-TACE drug-eluting beads transarterial chemoembolization liver', color: 'tace' },
-  cryo: { label: 'Cryo Ablation', query: 'cryoablation cryotherapy liver tumor ablation interventional radiology', color: 'cryo' }
-};
-
-// ─── INIT ─────────────────────────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
-  updateCycleLabel();
-  setRange(1);
-  loadSaved();
-  updateStats();
-  if (apiKey) document.getElementById('api-key-btn').textContent = '⚙ AI Setup ✓';
-});
-
-function updateCycleLabel() {
-  const now = new Date();
-  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  document.getElementById('cycle-label').textContent =
-    `${months[now.getMonth()]} ${now.getFullYear()} Digest`;
-}
-
-function setRange(months) {
-  const now = new Date();
-  const to = now.toISOString().split('T')[0];
-  let from;
-  if (months === 0) {
-    // This month
-    from = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
-  } else if (months === -7) {
-    // Last 7 days
-    const d = new Date(now);
-    d.setDate(d.getDate() - 7);
-    from = d.toISOString().split('T')[0];
-  } else {
-    const d = new Date(now);
-    d.setMonth(d.getMonth() - months);
-    from = d.toISOString().split('T')[0];
-  }
-  document.getElementById('date-from').value = from;
-  document.getElementById('date-to').value = to;
-}
-
-// ─── PERSISTENCE ──────────────────────────────────────────────────────────────
-function saveArticles() {
-  localStorage.setItem('pubMonitorArticles', JSON.stringify(articles));
-}
-
-function loadSaved() {
-  const saved = localStorage.getItem('pubMonitorArticles');
-  if (saved) {
-    try {
-      articles = JSON.parse(saved);
-      applyFilters();
-    } catch(e) {}
-  }
-}
-
-// ─── PUBMED SEARCH ────────────────────────────────────────────────────────────
-const PUBMED_BASE = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/';
-const NCBI_TOOL = 'IROncoLitMonitor';
-const NCBI_EMAIL = 'litmonitor@research.tool';
-
-// Topic search queries — structured MeSH + title/abstract
-const TOPIC_QUERIES = {
-  y90: '(radioembolization[Title/Abstract] OR "Y-90"[Title/Abstract] OR "yttrium-90"[Title/Abstract] OR "TARE"[Title/Abstract] OR "SIRT"[Title/Abstract] OR "TheraSphere"[Title/Abstract] OR "SIR-Spheres"[Title/Abstract]) AND (liver[Title/Abstract] OR hepatic[Title/Abstract] OR HCC[Title/Abstract] OR hepatocellular[Title/Abstract])',
-  tace: '("drug-eluting bead"[Title/Abstract] OR "DEB-TACE"[Title/Abstract] OR "DEBDOX"[Title/Abstract] OR "DEBTACE"[Title/Abstract] OR ("transarterial chemoembolization"[Title/Abstract] AND ("drug eluting"[Title/Abstract] OR "drug-eluting"[Title/Abstract] OR "bead"[Title/Abstract])))',
-  cryo: '(cryoablation[Title/Abstract] OR cryotherapy[Title/Abstract] OR "cryo ablation"[Title/Abstract] OR "percutaneous cryoablation"[Title/Abstract]) AND (liver[Title/Abstract] OR tumor[Title/Abstract] OR tumour[Title/Abstract] OR neoplasm[Title/Abstract] OR ablation[Title/Abstract])'
-};
-
-function ncbiParams(extra = {}) {
-  const p = new URLSearchParams({ tool: NCBI_TOOL, email: NCBI_EMAIL, retmode: 'json', ...extra });
-  return p.toString();
-}
-
-// NCBI date format for mindate/maxdate: YYYY/MM/DD
-function toNcbiDate(iso) {
-  return iso.replace(/-/g, '/');
-}
-
-async function fetchPubmedIds(topic, dateFrom, dateTo, maxResults) {
-  const term = TOPIC_QUERIES[topic];
-  const params = ncbiParams({
-    db: 'pubmed',
-    term,
-    retmax: maxResults,
-    sort: 'pub+date',
-    datetype: 'pdat',
-    mindate: toNcbiDate(dateFrom),
-    maxdate: toNcbiDate(dateTo)
-  });
-  const url = `${PUBMED_BASE}esearch.fcgi?${params}`;
-  const r = await fetch(url, { headers: { 'Accept': 'application/json' } });
-  if (!r.ok) throw new Error(`PubMed search HTTP ${r.status}`);
-  const data = await r.json();
-  const ids = data.esearchresult?.idlist || [];
-  const count = parseInt(data.esearchresult?.count || '0');
-  return { ids, count };
-}
-
-async function fetchPubmedDetails(ids) {
-  if (!ids.length) return [];
-  // Batch in chunks of 20 to avoid URL length limits
-  const chunks = [];
-  for (let i = 0; i < ids.length; i += 20) chunks.push(ids.slice(i, i + 20));
-  let results = [];
-  for (const chunk of chunks) {
-    const params = ncbiParams({ db: 'pubmed', id: chunk.join(',') });
-    const url = `${PUBMED_BASE}esummary.fcgi?${params}`;
-    const r = await fetch(url, { headers: { 'Accept': 'application/json' } });
-    if (!r.ok) continue;
-    const data = await r.json();
-    const items = Object.values(data.result || {}).filter(x => x.uid);
-    results = results.concat(items);
-    await new Promise(res => setTimeout(res, 340)); // NCBI rate limit: 3 req/sec
-  }
-  return results;
-}
-
-async function fetchAbstract(pmid) {
-  const params = ncbiParams({ db: 'pubmed', id: pmid, rettype: 'xml', retmode: 'xml' });
-  const url = `${PUBMED_BASE}efetch.fcgi?${params}`;
-  const r = await fetch(url);
-  const xml = await r.text();
-  // Parse abstract from XML — handles structured abstracts (Background/Methods/Results/Conclusion)
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(xml, 'text/xml');
-  const abstractTexts = doc.querySelectorAll('AbstractText');
-  if (abstractTexts.length) {
-    const parts = [...abstractTexts].map(el => {
-      const label = el.getAttribute('Label');
-      const text = el.textContent.trim();
-      return label ? `${label}: ${text}` : text;
-    });
-    return parts.join('\n\n');
-  }
-  return 'Abstract not available.';
-}
-
-// Extract DOI from PubMed summary result
-function extractDoi(d) {
-  const ids = d.articleids || [];
-  const doi = ids.find(x => x.idtype === 'doi');
-  return doi ? doi.value : null;
-}
-
-async function runSearch() {
-  const topics = [...document.querySelectorAll('.topic-chip input:checked')].map(x => x.value);
-  if (!topics.length) { toast('Select at least one topic', 'error'); return; }
-
-  const dateFrom = document.getElementById('date-from').value;
-  const dateTo = document.getElementById('date-to').value;
-  const maxResults = parseInt(document.getElementById('max-results').value);
-
-  setSearching(true);
-  showSkeletons();
-
-  const progressBar = document.getElementById('progress-bar');
-  const progressFill = document.getElementById('progress-fill');
-  progressBar.style.display = 'block';
-  progressFill.style.width = '0%';
-
-  let newArticles = [];
-  let progress = 0;
-
-  for (const topic of topics) {
-    try {
-      const label = document.getElementById('search-label');
-      label.textContent = `Searching ${TOPICS[topic].label}…`;
-
-      const { ids, count } = await fetchPubmedIds(topic, dateFrom, dateTo, maxResults);
-      progress += (40 / topics.length);
-      progressFill.style.width = progress + '%';
-
-      if (!ids.length) {
-        toast(`No results for ${TOPICS[topic].label} in this date range`, '');
-        progress += (60 / topics.length);
-        progressFill.style.width = progress + '%';
-        continue;
-      }
-
-      label.textContent = `Loading ${ids.length} articles…`;
-      const details = await fetchPubmedDetails(ids);
-      progress += (60 / topics.length);
-      progressFill.style.width = progress + '%';
-
-      for (const d of details) {
-        const pmid = d.uid;
-        if (articles.find(a => a.pmid === pmid)) continue;
-
-        const authors = (d.authors || []).map(a => a.name).slice(0, 8).join(', ');
-        const pubDate = d.pubdate || d.epubdate || '';
-        const doi = extractDoi(d);
-        const volume = d.volume || '';
-        const issue = d.issue || '';
-        const pages = d.pages || '';
-        const citation = [volume && `Vol.${volume}`, issue && `Issue ${issue}`, pages].filter(Boolean).join(' ');
-
-        newArticles.push({
-          pmid,
-          topic,
-          title: (d.title || 'No title').replace(/<[^>]+>/g, ''), // strip HTML tags
-          authors,
-          journal: d.source || '',
-          pubDate,
-          doi,
-          citation,
-          abstract: '',
-          aiSummary: '',
-          keyFindings: '',
-          sent: false,
-          sentDate: null,
-          sentTo: [],
-          addedAt: new Date().toISOString()
-        });
-      }
-    } catch(e) {
-      console.error('Search error for topic:', topic, e);
-      toast(`Error searching ${TOPICS[topic].label}: ${e.message}`, 'error');
-    }
-  }
-
-  articles = [...newArticles, ...articles];
-  saveArticles();
-  applyFilters();
-  updateStats();
-  updateTopicCounts();
-  setSearching(false);
-  progressBar.style.display = 'none';
-
-  toast(`Found ${newArticles.length} new articles`, 'success');
-}
-
-function setSearching(on) {
-  const btn = document.getElementById('search-btn');
-  const spinner = document.getElementById('search-spinner');
-  const label = document.getElementById('search-label');
-  btn.disabled = on;
-  spinner.style.display = on ? 'block' : 'none';
-  label.textContent = on ? 'Searching…' : '🔍 Search PubMed';
-}
-
-function showSkeletons() {
-  const pane = document.getElementById('articles-pane');
-  pane.innerHTML = '';
-  for (let i = 0; i < 5; i++) {
-    pane.innerHTML += `<div class="skeleton-card">
-      <div class="skeleton" style="width:60%;margin-bottom:8px;"></div>
-      <div class="skeleton" style="width:100%;margin-bottom:6px;"></div>
-      <div class="skeleton" style="width:80%;"></div>
-    </div>`;
-  }
-}
-
-// ─── TOPIC TOGGLE ─────────────────────────────────────────────────────────────
-function toggleTopic(cb) {
-  const chip = cb.closest('.topic-chip');
-  chip.classList.toggle('active', cb.checked);
-}
-
-function updateTopicCounts() {
-  for (const topic of Object.keys(TOPICS)) {
-    const count = articles.filter(a => a.topic === topic).length;
-    document.getElementById(`count-${topic}`).textContent = count;
-  }
-}
-
-// ─── FILTERS & SORT ───────────────────────────────────────────────────────────
-function filterArticles(type, btn) {
-  currentFilter = type;
-  document.querySelectorAll('.ftab').forEach(b => b.classList.remove('active'));
-  if (btn) btn.classList.add('active');
-  applyFilters();
-}
-
-function filterByText(val) {
-  textFilter = val.toLowerCase();
-  applyFilters();
-}
-
-function sortArticles(val) {
-  currentSort = val;
-  applyFilters();
-}
-
-function applyFilters() {
-  let list = [...articles];
-
-  // Status filter
-  if (currentFilter === 'unsent') list = list.filter(a => !a.sent);
-  else if (currentFilter === 'sent') list = list.filter(a => a.sent);
-  else if (currentFilter === 'summarized') list = list.filter(a => a.aiSummary);
-
-  // Text filter
-  if (textFilter) {
-    list = list.filter(a =>
-      a.title.toLowerCase().includes(textFilter) ||
-      a.authors.toLowerCase().includes(textFilter) ||
-      a.journal.toLowerCase().includes(textFilter)
-    );
-  }
-
-  // Sort
-  list.sort((a, b) => {
-    if (currentSort === 'date-desc') return new Date(b.pubDate) - new Date(a.pubDate) || b.addedAt.localeCompare(a.addedAt);
-    if (currentSort === 'date-asc')  return new Date(a.pubDate) - new Date(b.pubDate);
-    if (currentSort === 'topic')     return a.topic.localeCompare(b.topic);
-    if (currentSort === 'journal')   return a.journal.localeCompare(b.journal);
-    return 0;
-  });
-
-  filteredArticles = list;
-  renderArticles();
-}
-
-// ─── RENDER ───────────────────────────────────────────────────────────────────
-function renderArticles() {
-  const pane = document.getElementById('articles-pane');
-  const empty = document.getElementById('empty-state');
-
-  if (!filteredArticles.length) {
-    pane.innerHTML = '';
-    pane.appendChild(createEmptyState());
-    return;
-  }
-
-  pane.innerHTML = '';
-  for (const art of filteredArticles) {
-    pane.appendChild(createCard(art));
-  }
-}
-
-function createEmptyState() {
-  const div = document.createElement('div');
-  div.className = 'empty-state';
-  div.innerHTML = articles.length
-    ? `<div class="empty-icon">🔎</div><div class="empty-title">No articles match</div><div class="empty-sub">Try adjusting your filters.</div>`
-    : `<div class="empty-icon">📡</div><div class="empty-title">No articles loaded yet</div><div class="empty-sub">Select topics and date range, then click Search PubMed.</div>`;
-  return div;
-}
-
-function createCard(art) {
-  const div = document.createElement('div');
-  div.className = `article-card${art.sent ? ' sent-card' : ''}`;
-  div.id = `card-${art.pmid}`;
-
-  const topicTag = `<span class="tag tag-${art.topic}">${TOPICS[art.topic]?.label || art.topic}</span>`;
-  const statusTag = art.sent
-    ? `<span class="tag tag-sent">✓ Sent</span>`
-    : `<span class="tag tag-unsent">● Pending</span>`;
-  const newTag = isRecent(art.addedAt) ? `<span class="tag tag-new">NEW</span>` : '';
-
-  div.innerHTML = `
-    <div class="card-top">
-      <input type="checkbox" class="card-checkbox" onchange="toggleSelect('${art.pmid}', this)">
-      <div class="card-meta">
-        <div class="card-tags">${topicTag}${statusTag}${newTag}</div>
-        <div class="article-title" onclick="toggleExpand('${art.pmid}')">${art.title}</div>
-        <div class="article-authors">${art.authors || '—'}</div>
-        <div class="article-journal">${art.journal} · ${formatDate(art.pubDate)}</div>
-      </div>
-      <div class="card-right">
-        <div class="article-date">${formatDate(art.pubDate)}</div>
-        <div class="card-actions">
-          ${art.aiSummary ? '' : `<button class="act-btn summarize-btn" onclick="summarizeOne('${art.pmid}')">✦ Summarize</button>`}
-          ${art.sent
-            ? `<button class="act-btn sent-btn" onclick="unmarkSent('${art.pmid}')">✓ Sent</button>`
-            : `<button class="act-btn mark-sent" onclick="markSent('${art.pmid}')">Mark Sent</button>`}
+    <section class="layout">
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Publications</h2>
+          <div class="row-actions">
+            <span class="pill" id="resultCount">0 results</span>
+            <button class="ghost" id="clearFiltersBtn">Clear Filter</button>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="stats">
+            <div class="stat"><strong id="statTotal">0</strong><span>Total</span></div>
+            <div class="stat"><strong id="statSelected">0</strong><span>In Email</span></div>
+            <div class="stat"><strong id="statUnsent">0</strong><span>Not Emailed</span></div>
+            <div class="stat"><strong id="statSent">0</strong><span>Emailed</span></div>
+          </div>
+          <div class="tabs" id="tabs"></div>
+          <div class="article-list" id="articleList">
+            <div class="empty">Choose a time frame and search PubMed.</div>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="card-body" id="body-${art.pmid}">
-      ${art.abstract ? `<div class="abstract-text">${art.abstract}</div>` : `<div class="abstract-text" style="color:var(--muted);font-style:italic;" id="abs-${art.pmid}"><button class="act-btn" onclick="loadAbstract('${art.pmid}')">Load abstract</button></div>`}
-      ${art.aiSummary ? `
-        <div class="ai-summary-box">
-          <div class="ai-summary-label"><span>✦</span> AI Summary</div>
-          <div class="ai-summary-text">${art.aiSummary}</div>
-        </div>` : ''}
-      ${art.keyFindings ? `
-        <div class="key-findings">
-          <div class="key-findings-label">Key Findings</div>
-          <div class="key-findings-text">${art.keyFindings}</div>
-        </div>` : ''}
-      ${art.sent && art.sentDate ? `<div class="sent-note">✓ Emailed on ${new Date(art.sentDate).toLocaleDateString()} to ${art.sentTo?.join(', ') || 'team'}</div>` : ''}
-      <div class="card-links">
-        <a class="card-link" href="https://pubmed.ncbi.nlm.nih.gov/${art.pmid}/" target="_blank">PubMed →</a>
-        <a class="card-link" href="https://scholar.google.com/scholar?q=${encodeURIComponent(art.title)}" target="_blank">Scholar →</a>
-        <a class="card-link" href="https://doi.org/" target="_blank">DOI →</a>
-      </div>
-    </div>
-  `;
-  return div;
-}
 
-function isRecent(iso) {
-  if (!iso) return false;
-  return (Date.now() - new Date(iso).getTime()) < 86400000 * 2;
-}
+      <aside class="panel">
+        <div class="panel-head">
+          <h2>Curate & Email</h2>
+          <button class="secondary" id="markEmailSentBtn" title="Mark included publications as emailed">Mark Email Sent</button>
+        </div>
+        <div class="panel-body editor-grid">
+          <div id="editorEmpty" class="empty">Select a publication to edit its summary and email status.</div>
+          <div id="editor" class="editor-grid" hidden>
+            <div>
+              <div class="selected-title" id="selectedTitle"></div>
+              <div class="meta" id="selectedMeta"></div>
+            </div>
+            <div class="row-actions">
+              <label class="checkline"><input type="checkbox" id="includeInEmail" /> Include in email</label>
+              <label class="checkline"><input type="checkbox" id="emailed" /> Already emailed</label>
+              <button id="openPubmedBtn">Open PubMed</button>
+            </div>
+            <label>Reference
+              <textarea id="referenceText"></textarea>
+            </label>
+            <label>Key message
+              <textarea id="keyMessage" placeholder="Clinical takeaway, novelty, limitations, or reason to share"></textarea>
+            </label>
+            <label>AI / personal notes
+              <textarea id="notes" placeholder="Paste AI summary or your own comments here"></textarea>
+            </label>
+            <div class="row-actions">
+              <button id="draftKeyMessageBtn">Draft Key Message</button>
+              <button class="primary" id="summarizeAiBtn">Summarize with AI</button>
+              <button id="copyAiPromptBtn">Copy AI Prompt</button>
+              <button id="summarizeIncludedBtn">Summarize Included</button>
+            </div>
+            <div>
+              <label>Abstract</label>
+              <div class="abstract" id="abstractText"></div>
+            </div>
+          </div>
 
-function formatDate(str) {
-  if (!str) return '—';
-  const parts = str.trim().split(' ');
-  if (parts.length >= 2) return parts.slice(0,2).join(' ');
-  return str;
-}
+          <div>
+            <div class="email-tools">
+              <label>Email subject prefix
+                <input id="emailTitle" value="Monthly Literature Update" />
+              </label>
+              <button class="primary" id="copyEmailBtn">Copy Email</button>
+              <button id="copyPlainBtn">Copy Plain Text</button>
+            </div>
+            <div class="email-preview" id="emailPreview"></div>
+          </div>
+        </div>
+      </aside>
+    </section>
+  </main>
+  <div class="toast" id="toast"></div>
 
-// ─── EXPAND ───────────────────────────────────────────────────────────────────
-function toggleExpand(pmid) {
-  const body = document.getElementById(`body-${pmid}`);
-  const card = document.getElementById(`card-${pmid}`);
-  const isOpen = body.classList.contains('open');
-  body.classList.toggle('open', !isOpen);
-  card.classList.toggle('expanded', !isOpen);
-}
+  <script>
+    const TOPICS = [
+      {
+        id: "y90",
+        label: "Y90",
+        query: '("Yttrium-90"[Title/Abstract] OR "Y-90"[Title/Abstract] OR radioembolization[Title/Abstract] OR "selective internal radiation therapy"[Title/Abstract] OR SIRT[Title/Abstract])'
+      },
+      {
+        id: "deb-tace",
+        label: "DEB-TACE",
+        query: '("drug-eluting bead"[Title/Abstract] OR "drug eluting bead"[Title/Abstract] OR DEB-TACE[Title/Abstract] OR "drug-eluting bead transarterial chemoembolization"[Title/Abstract])'
+      },
+      {
+        id: "cryo",
+        label: "Cryoablation",
+        query: '(cryoablation[Title/Abstract] OR "cryo ablation"[Title/Abstract] OR cryotherapy[Title/Abstract])'
+      }
+    ];
 
-async function loadAbstract(pmid) {
-  const el = document.getElementById(`abs-${pmid}`);
-  el.textContent = 'Loading…';
-  try {
-    const abstract = await fetchAbstract(pmid);
-    const art = articles.find(a => a.pmid === pmid);
-    if (art) { art.abstract = abstract; saveArticles(); }
-    el.textContent = abstract;
-  } catch(e) {
-    el.textContent = 'Could not load abstract.';
-  }
-}
+    const STORAGE_KEY = "monthlyPublicationUpdate.v1";
+    const state = {
+      records: {},
+      articles: [],
+      activeTopic: "all",
+      selectedPmid: null
+    };
 
-// ─── SELECT ───────────────────────────────────────────────────────────────────
-function toggleSelect(pmid, cb) {
-  const card = document.getElementById(`card-${pmid}`);
-  card.classList.toggle('selected', cb.checked);
-  if (cb.checked) addToDigest(pmid);
-  else removeFromDigest(pmid);
-}
+    const $ = (id) => document.getElementById(id);
 
-function getSelected() {
-  return [...document.querySelectorAll('.card-checkbox:checked')]
-    .map(cb => cb.closest('.article-card').id.replace('card-',''));
-}
+    function escapeHtml(value) {
+      return String(value || "").replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      }[char]));
+    }
 
-// ─── MARK SENT ────────────────────────────────────────────────────────────────
-function markSent(pmid, recipients=[]) {
-  const art = articles.find(a => a.pmid === pmid);
-  if (art) {
-    art.sent = true;
-    art.sentDate = new Date().toISOString();
-    art.sentTo = recipients;
-    saveArticles();
-    applyFilters();
-    updateStats();
-    toast('Marked as sent', 'success');
-  }
-}
+    function decodeXmlText(value) {
+      const textarea = document.createElement("textarea");
+      textarea.innerHTML = value || "";
+      return textarea.value;
+    }
 
-function unmarkSent(pmid) {
-  const art = articles.find(a => a.pmid === pmid);
-  if (art) { art.sent = false; art.sentDate = null; art.sentTo = []; saveArticles(); applyFilters(); updateStats(); }
-}
+    function showToast(message) {
+      $("toast").textContent = message;
+      $("toast").classList.add("show");
+      window.clearTimeout(showToast.timer);
+      showToast.timer = window.setTimeout(() => $("toast").classList.remove("show"), 2200);
+    }
 
-function markSelectedSent() {
-  const ids = getSelected();
-  if (!ids.length) { toast('Select articles first', 'error'); return; }
-  ids.forEach(id => markSent(id));
-  toast(`Marked ${ids.length} articles as sent`, 'success');
-}
+    function setLoading(isLoading, text = "Searching PubMed") {
+      $("loader").classList.toggle("show", isLoading);
+      $("loaderText").textContent = text;
+      $("searchBtn").disabled = isLoading;
+    }
 
-// ─── AI SUMMARIZE ─────────────────────────────────────────────────────────────
-// ─── AI API CALL (OpenRouter — free models) ──────────────────────────────────
-// Free model list — openrouter/free auto-selects; fallbacks listed if needed
-const FREE_MODELS = [
-  'openrouter/auto',
-  'meta-llama/llama-3.3-70b-instruct:free',
-  'deepseek/deepseek-r1:free',
-  'qwen/qwen3-8b:free',
-  'mistralai/mistral-7b-instruct:free'
-];
-let modelIndex = 0;
-
-async function callAI(prompt) {
-  if (!apiKey) throw new Error('No API key — click ⚙ AI Setup to add your free OpenRouter key');
-  const model = FREE_MODELS[modelIndex % FREE_MODELS.length];
-  const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${apiKey}`,
-      'HTTP-Referer': window.location.href,
-      'X-Title': 'IR Onco Lit Monitor'
-    },
-    body: JSON.stringify({
-      model,
-      max_tokens: 1024,
-      temperature: 0.4,
-      messages: [{ role: 'user', content: prompt }]
-    })
-  });
-  const data = await response.json();
-  if (data.error) {
-    // If this model is unavailable/paid, try next one
-    const msg = data.error.message || JSON.stringify(data.error);
-    if (msg.includes('unavailable') || msg.includes('paid') || msg.includes('quota')) {
-      modelIndex++;
-      if (modelIndex < FREE_MODELS.length) {
-        console.log(`Switching to fallback model: ${FREE_MODELS[modelIndex]}`);
-        return callAI(prompt); // retry with next model
+    function loadState() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+        state.records = saved.records || {};
+        $("emailTitle").value = saved.emailTitle || "Monthly Literature Update";
+        $("aiEndpoint").value = saved.aiEndpoint || "";
+      } catch {
+        state.records = {};
       }
     }
-    throw new Error(msg);
-  }
-  return data.choices?.[0]?.message?.content || '';
-}
 
-async function summarizeOne(pmid) {
-  if (!apiKey) { openApiModal(); toast('Set up your free Gemini key first', 'error'); return; }
-  const art = articles.find(a => a.pmid === pmid);
-  if (!art) return;
-
-  // Load abstract if needed
-  if (!art.abstract) {
-    try {
-      const text = await fetchAbstract(pmid);
-      const match = text.match(/Abstract\n([\s\S]+?)(?:\n\n|\nPMID)/);
-      art.abstract = match ? match[1].trim() : text.slice(0, 1200);
-    } catch(e) {}
-  }
-
-  const btn = document.querySelector(`#card-${pmid} .summarize-btn`);
-  if (btn) { btn.textContent = '⟳ Thinking…'; btn.disabled = true; }
-
-  try {
-    const prompt = `You are a Medical Science Liaison in interventional radiology/oncology. Analyze this PubMed article:
-
-TITLE: ${art.title}
-AUTHORS: ${art.authors}
-JOURNAL: ${art.journal} (${art.pubDate})
-ABSTRACT: ${art.abstract || 'Not available'}
-
-Respond in this EXACT format (use these labels exactly):
-
-SUMMARY:
-[2-3 sentences: what this study did, key result, clinical relevance]
-
-KEY FINDINGS:
-• [Specific numerical result or finding]
-• [Second key finding]
-• [Third key finding if applicable]
-• [Clinical implication for interventional oncology practice]`;
-
-    const text = await callAI(prompt);
-    const summaryMatch = text.match(/SUMMARY:\s*([\s\S]+?)(?=KEY FINDINGS:|$)/i);
-    const findingsMatch = text.match(/KEY FINDINGS:\s*([\s\S]+?)$/i);
-
-    art.aiSummary = summaryMatch ? summaryMatch[1].trim() : text;
-    art.keyFindings = findingsMatch ? findingsMatch[1].trim() : '';
-    saveArticles();
-
-    // Re-render that card
-    const card = document.getElementById(`card-${pmid}`);
-    if (card) {
-      const newCard = createCard(art);
-      card.replaceWith(newCard);
-      const body = document.getElementById(`body-${pmid}`);
-      if (body) body.classList.add('open');
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        records: state.records,
+        emailTitle: $("emailTitle").value,
+        aiEndpoint: $("aiEndpoint").value
+      }));
     }
 
-    updateStats();
-    toast('Summary ready', 'success');
-  } catch(e) {
-    toast('AI error: ' + e.message, 'error');
-    if (btn) { btn.textContent = '✦ Summarize'; btn.disabled = false; }
-  }
-}
+    function getRecord(pmid) {
+      if (!state.records[pmid]) {
+        state.records[pmid] = {
+          include: true,
+          emailed: false,
+          reference: "",
+          keyMessage: "",
+          notes: ""
+        };
+      }
+      return state.records[pmid];
+    }
 
-async function summarizeSelected() {
-  const ids = getSelected();
-  if (!ids.length) { toast('Select articles first', 'error'); return; }
-  if (!apiKey) { openApiModal(); return; }
-  toast(`Summarizing ${ids.length} articles…`);
-  for (const id of ids) {
-    await summarizeOne(id);
-    await new Promise(r => setTimeout(r, 800));
-  }
-  toast(`Summarized ${ids.length} articles`, 'success');
-}
+    function setDefaultDates() {
+      const now = new Date();
+      const first = new Date(now.getFullYear(), now.getMonth(), 1);
+      const last = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+      $("startDate").valueAsDate = first;
+      $("endDate").valueAsDate = last;
+    }
 
-// ─── STATS ────────────────────────────────────────────────────────────────────
-function updateStats() {
-  const total = articles.length;
-  const sent = articles.filter(a => a.sent).length;
-  const unsent = total - sent;
-  const ai = articles.filter(a => a.aiSummary).length;
-  document.getElementById('stat-total').textContent = total;
-  document.getElementById('stat-sent').textContent = sent;
-  document.getElementById('stat-unsent').textContent = unsent;
-  document.getElementById('stat-ai').textContent = ai;
-  updateTopicCounts();
-}
+    function setPreviousMonth() {
+      const now = new Date();
+      const first = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      const last = new Date(now.getFullYear(), now.getMonth(), 0);
+      $("startDate").valueAsDate = first;
+      $("endDate").valueAsDate = last;
+    }
 
-// ─── EMAIL ────────────────────────────────────────────────────────────────────
-function openEmailModal() {
-  const now = new Date();
-  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-  document.getElementById('email-subject').value = `IR/Onco Literature Update — ${months[now.getMonth()]} ${now.getFullYear()}`;
-  
-  const selected = getSelected();
-  const unsentArticles = filteredArticles.filter(a => !a.sent);
-  const toSend = selected.length ? articles.filter(a => selected.includes(a.pmid)) : unsentArticles.slice(0, 10);
-  
-  document.getElementById('email-preview-articles').textContent =
-    `${toSend.length} article(s) will be included${selected.length ? ' (selected)' : ' (all unsent, max 10)'}.`;
+    function setRelativeRange(days) {
+      const end = new Date();
+      const start = new Date();
+      start.setDate(end.getDate() - Number(days) + 1);
+      $("startDate").valueAsDate = start;
+      $("endDate").valueAsDate = end;
+      renderEmail();
+    }
 
-  document.getElementById('email-modal-overlay').classList.add('open');
-}
+    function yyyymmdd(dateValue) {
+      return (dateValue || "").replaceAll("-", "/");
+    }
 
-function closeEmailModal() {
-  document.getElementById('email-modal-overlay').classList.remove('open');
-}
+    async function fetchJson(url) {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`PubMed request failed: ${response.status}`);
+      return response.json();
+    }
 
-// ─── DIGEST PANEL ────────────────────────────────────────────────────────────
-let digestQueue = []; // array of pmids
-let digestFormat = 'email';
+    async function fetchText(url) {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`PubMed request failed: ${response.status}`);
+      return response.text();
+    }
 
-function setFormat(fmt, btn) {
-  digestFormat = fmt;
-  document.querySelectorAll('.fmt-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-}
+    async function searchTopic(topic) {
+      const extra = $("extraTerms").value.trim();
+      const term = extra ? `(${topic.query}) AND (${extra})` : topic.query;
+      const params = new URLSearchParams({
+        db: "pubmed",
+        term,
+        retmode: "json",
+        retmax: $("retmax").value,
+        sort: "pub date",
+        datetype: "pdat",
+        mindate: yyyymmdd($("startDate").value),
+        maxdate: yyyymmdd($("endDate").value),
+        tool: "monthly_publication_update"
+      });
+      const esearch = await fetchJson(`https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?${params}`);
+      const ids = esearch.esearchresult?.idlist || [];
+      if (!ids.length) return [];
 
-function addToDigest(pmid) {
-  if (!digestQueue.includes(pmid)) {
-    digestQueue.push(pmid);
-    renderDigestQueue();
-  }
-}
+      const summaryParams = new URLSearchParams({
+        db: "pubmed",
+        id: ids.join(","),
+        retmode: "json",
+        tool: "monthly_publication_update"
+      });
+      const summary = await fetchJson(`https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?${summaryParams}`);
 
-function removeFromDigest(pmid) {
-  digestQueue = digestQueue.filter(id => id !== pmid);
-  // uncheck card checkbox if visible
-  const cb = document.querySelector(`#card-${pmid} .card-checkbox`);
-  if (cb) cb.checked = false;
-  const card = document.getElementById(`card-${pmid}`);
-  if (card) card.classList.remove('selected');
-  renderDigestQueue();
-}
+      const fetchParams = new URLSearchParams({
+        db: "pubmed",
+        id: ids.join(","),
+        retmode: "xml",
+        rettype: "abstract",
+        tool: "monthly_publication_update"
+      });
+      const xml = await fetchText(`https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?${fetchParams}`);
+      const abstracts = parseAbstracts(xml);
 
-function clearDigestQueue() {
-  digestQueue = [];
-  // uncheck all checkboxes
-  document.querySelectorAll('.card-checkbox').forEach(cb => {
-    cb.checked = false;
-    cb.closest('.article-card')?.classList.remove('selected');
-  });
-  renderDigestQueue();
-  document.getElementById('digest-output').value = '';
-  document.getElementById('digest-gen-status').textContent = '';
-}
+      return ids.map((pmid) => {
+        const item = summary.result?.[pmid] || {};
+        const authors = (item.authors || []).slice(0, 6).map((author) => author.name).filter(Boolean);
+        const article = {
+          pmid,
+          topicId: topic.id,
+          topicLabel: topic.label,
+          title: item.title || "Untitled",
+          journal: item.fulljournalname || item.source || "",
+          pubdate: item.pubdate || "",
+          authors,
+          doi: findArticleId(item.articleids, "doi"),
+          pmc: findArticleId(item.articleids, "pmc"),
+          abstract: abstracts[pmid] || "No abstract found in PubMed."
+        };
+        const record = getRecord(pmid);
+        if (!record.reference) record.reference = buildReference(article);
+        return article;
+      });
+    }
 
-function renderDigestQueue() {
-  const queue = document.getElementById('digest-queue');
-  const badge = document.getElementById('digest-count');
-  badge.textContent = digestQueue.length;
+    function parseAbstracts(xmlText) {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(xmlText, "text/xml");
+      const output = {};
+      doc.querySelectorAll("PubmedArticle").forEach((articleNode) => {
+        const pmid = articleNode.querySelector("PMID")?.textContent?.trim();
+        const abstractParts = Array.from(articleNode.querySelectorAll("AbstractText")).map((node) => {
+          const label = node.getAttribute("Label");
+          const text = decodeXmlText(node.textContent.trim());
+          return label ? `${label}: ${text}` : text;
+        }).filter(Boolean);
+        if (pmid) output[pmid] = abstractParts.join("\n\n");
+      });
+      return output;
+    }
 
-  if (!digestQueue.length) {
-    queue.innerHTML = `<div class="digest-empty">
-      <div class="digest-empty-icon">✉</div>
-      <div class="digest-empty-text">Check articles on the left to queue them here, then click Generate.</div>
-    </div>`;
-    return;
-  }
+    function findArticleId(ids, type) {
+      return (ids || []).find((item) => item.idtype === type)?.value || "";
+    }
 
-  queue.innerHTML = '';
-  for (const pmid of digestQueue) {
-    const art = articles.find(a => a.pmid === pmid);
-    if (!art) continue;
-    const topicColors = { y90: '#3b82f6', tace: '#a78bfa', cryo: '#22d3ee' };
-    const item = document.createElement('div');
-    item.className = 'queue-item';
-    item.innerHTML = `
-      <span class="queue-dot" style="background:${topicColors[art.topic] || '#888'}"></span>
-      <div class="queue-item-meta">
-        <div class="queue-item-title">${art.title}</div>
-        <div class="queue-item-sub">${art.journal} · ${formatDate(art.pubDate)}${art.aiSummary ? ' · ✦ summarized' : ''}</div>
-      </div>
-      <button class="queue-remove" onclick="removeFromDigest('${pmid}')" title="Remove">✕</button>
-    `;
-    queue.appendChild(item);
-  }
-}
+    function buildReference(article) {
+      const authorText = article.authors.length ? `${article.authors.join(", ")}.` : "";
+      const doiText = article.doi ? ` doi: ${article.doi}.` : "";
+      return `${authorText} ${article.title} ${article.journal}. ${article.pubdate}.${doiText} PMID: ${article.pmid}.`.replace(/\s+/g, " ").trim();
+    }
 
-async function generateDigest() {
-  if (!digestQueue.length) { toast('Add articles to the queue first', 'error'); return; }
-  if (!apiKey) { openApiModal(); toast('Set up your free Gemini key first', 'error'); return; }
-
-  const toSend = digestQueue.map(pmid => articles.find(a => a.pmid === pmid)).filter(Boolean);
-
-  // For articles without summaries, load abstracts first
-  const statusEl = document.getElementById('digest-gen-status');
-  const genBtn = document.getElementById('gen-btn');
-  const genLabel = document.getElementById('gen-label');
-  const genSpinner = document.getElementById('gen-spinner');
-
-  genBtn.disabled = true;
-  genSpinner.style.display = 'block';
-  genLabel.textContent = 'Generating…';
-  statusEl.textContent = 'Loading abstracts…';
-
-  for (const art of toSend) {
-    if (!art.abstract) {
+    async function runSearch() {
+      if (!$("startDate").value || !$("endDate").value) {
+        showToast("Please choose a start and end date.");
+        return;
+      }
+      setLoading(true);
       try {
-        art.abstract = await fetchAbstract(art.pmid);
-        saveArticles();
-      } catch(e) {}
-    }
-  }
-
-  statusEl.textContent = 'Drafting with AI…';
-
-  const now = new Date();
-  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-  const monthLabel = `${months[now.getMonth()]} ${now.getFullYear()}`;
-
-  const articleBlock = toSend.map((a, i) => [
-    `${i+1}. [${TOPICS[a.topic]?.label || a.topic}] ${a.title}`,
-    `   Authors: ${a.authors ? a.authors.split(', ').slice(0,4).join(', ') : 'N/A'}`,
-    `   Journal: ${a.journal} (${formatDate(a.pubDate)})`,
-    a.aiSummary ? `   AI Summary: ${a.aiSummary}` : '',
-    a.keyFindings ? `   Key Findings: ${a.keyFindings}` : '',
-    a.abstract && !a.aiSummary ? `   Abstract: ${a.abstract.slice(0, 400)}` : '',
-    `   PubMed: https://pubmed.ncbi.nlm.nih.gov/${a.pmid}/`,
-  ].filter(Boolean).join('\n')).join('\n\n');
-
-  const formatPrompts = {
-    email: `Draft a professional monthly literature update EMAIL for a clinical IR/oncology team.
-
-Structure:
-SUBJECT: [subject line]
-
-Dear Team,
-
-[2-sentence intro about this month's search scope and total articles found]
-
---- Y90 / TARE / SIRT (include this section only if there are Y90 articles) ---
-
-[Article Title — hyperlinked as: TITLE (https://pubmed.ncbi.nlm.nih.gov/PMID/)]
-Summary: [2-3 sentence summary of what was studied, key finding, and clinical relevance]
-Reference: [APA format: Last, F. M., Last, F. M., & Last, F. M. (Year). Title of article. Journal Name, Volume(Issue), Pages. https://doi.org/xxx OR https://pubmed.ncbi.nlm.nih.gov/PMID/]
-
-[Repeat for each Y90 article]
-
---- DEB-TACE (include this section only if there are DEB-TACE articles) ---
-[Same format: Title link → Summary → APA Reference]
-
---- Cryoablation (include this section only if there are Cryoablation articles) ---
-[Same format: Title link → Summary → APA Reference]
-
-[Brief closing — offer to discuss at next team meeting or share full PDFs on request]
-
-Best regards,
-Medical Affairs / MSL Team
-
-RULES:
-- Each article MUST have: clickable title (as a URL), a 2-3 sentence Summary paragraph, and a full APA 7th edition Reference
-- APA format: Author, A. A., Author, B. B., & Author, C. C. (Year). Article title in sentence case. Journal Name in Title Case, Volume(Issue), StartPage–EndPage. https://pubmed.ncbi.nlm.nih.gov/PMID/
-- If volume/issue/pages unknown, end reference with the PubMed URL only
-- Plain text. No markdown symbols like ** or ##. Use --- for section dividers.`,
-
-    bullet: `Create a BULLET POINT SUMMARY of these articles for a quick team briefing.
-
-Format:
-SUBJECT: [subject line]
-
-[MONTH YEAR] IR/Oncology Literature Highlights
-
-Y90/TARE (if applicable):
-• [Title short form] — [1 sentence key finding] (PMID: [id])
-
-DEB-TACE (if applicable):
-• ...
-
-Cryoablation (if applicable):
-• ...
-
-Plain text only. Crisp and scannable.`,
-
-    table: `Create a REFERENCE LIST for filing and citation purposes.
-
-Format:
-SUBJECT: [subject line]
-
-[MONTH YEAR] Publication Reference List
-
-#  | Topic | Authors | Title | Journal | Year | PMID
----|-------|---------|-------|---------|------|-----
-1  | Y90   | ...     | ...   | ...     | ...  | ...
-
-Use plain text tab-separated columns. Then below, add a 1-line clinical note per article.`
-  };
-
-  const prompt = `You are a Medical Science Liaison for interventional radiology and oncology (TheraSphere/Y90).
-Month: ${monthLabel}
-Articles (${toSend.length} total):
-
-${articleBlock}
-
-${formatPrompts[digestFormat]}`;
-
-  try {
-    const text = await callAI(prompt);
-
-    // Auto-fill subject if found
-    const subjectMatch = text.match(/^SUBJECT:\s*(.+)/m);
-    if (subjectMatch) {
-      document.getElementById('digest-subject').value = subjectMatch[1].trim();
+        const nested = [];
+        for (const topic of TOPICS) {
+          setLoading(true, `Searching ${topic.label}`);
+          nested.push(await searchTopic(topic));
+        }
+        const merged = new Map();
+        nested.flat().forEach((article) => {
+          if (merged.has(article.pmid)) {
+            const existing = merged.get(article.pmid);
+            if (!existing.topicLabel.includes(article.topicLabel)) {
+              existing.topicLabel += `, ${article.topicLabel}`;
+            }
+          } else {
+            merged.set(article.pmid, article);
+          }
+        });
+        state.articles = Array.from(merged.values());
+        state.selectedPmid = state.articles[0]?.pmid || null;
+        saveState();
+        render();
+        showToast(`Loaded ${state.articles.length} PubMed records.`);
+      } catch (error) {
+        console.error(error);
+        showToast(error.message || "Search failed.");
+      } finally {
+        setLoading(false);
+      }
     }
 
-    document.getElementById('digest-output').value = text;
-    statusEl.textContent = `✓ Ready — ${toSend.length} article${toSend.length > 1 ? 's' : ''} included`;
-    toast('Digest ready — copy and paste!', 'success');
-  } catch(e) {
-    statusEl.textContent = 'Error: ' + e.message;
-    toast('AI error: ' + e.message, 'error');
-  } finally {
-    genBtn.disabled = false;
-    genSpinner.style.display = 'none';
-    genLabel.textContent = '✦ Generate';
-  }
-}
+    function renderTabs() {
+      const tabs = [{ id: "all", label: "All" }, ...TOPICS.map((topic) => ({ id: topic.id, label: topic.label })), { id: "unsent", label: "Not emailed" }, { id: "included", label: "In email" }];
+      $("tabs").innerHTML = tabs.map((tab) => `<button class="tab ${state.activeTopic === tab.id ? "active" : ""}" data-tab="${tab.id}">${tab.label}</button>`).join("");
+      document.querySelectorAll("[data-tab]").forEach((button) => {
+        button.addEventListener("click", () => {
+          state.activeTopic = button.dataset.tab;
+          render();
+        });
+      });
+    }
 
-function copyDigest() {
-  const subject = document.getElementById('digest-subject').value;
-  const body = document.getElementById('digest-output').value;
-  if (!body) { toast('Generate the digest first', 'error'); return; }
-  const full = subject ? `Subject: ${subject}\n\n${body}` : body;
-  navigator.clipboard.writeText(full).then(() => {
-    const btn = document.getElementById('copy-btn');
-    btn.textContent = '✓ Copied!';
-    btn.classList.add('copied');
-    setTimeout(() => { btn.textContent = '📋 Copy'; btn.classList.remove('copied'); }, 2000);
-    // Mark queued articles as sent
-    digestQueue.forEach(pmid => {
-      const art = articles.find(a => a.pmid === pmid);
-      if (art) { art.sent = true; art.sentDate = new Date().toISOString(); }
-    });
-    saveArticles();
-    applyFilters();
-    updateStats();
-    toast('Copied! Articles marked as sent.', 'success');
-  });
-}
+    function getVisibleArticles() {
+      const filter = $("filterText").value.trim().toLowerCase();
+      return state.articles.filter((article) => {
+        const record = getRecord(article.pmid);
+        const matchesTopic =
+          state.activeTopic === "all" ||
+          (state.activeTopic === "unsent" && !record.emailed) ||
+          (state.activeTopic === "included" && record.include) ||
+          article.topicId === state.activeTopic;
+        const haystack = `${article.title} ${article.journal} ${article.authors.join(" ")} ${article.pmid} ${article.topicLabel}`.toLowerCase();
+        return matchesTopic && (!filter || haystack.includes(filter));
+      });
+    }
 
-function openDigestInMail() {
-  const subject = encodeURIComponent(document.getElementById('digest-subject').value || 'Monthly IR/Onco Literature Update');
-  const body = encodeURIComponent(document.getElementById('digest-output').value);
-  if (!body) { toast('Generate the digest first', 'error'); return; }
-  window.location.href = `mailto:?subject=${subject}&body=${body}`;
-}
+    function renderArticles() {
+      const visible = getVisibleArticles();
+      $("resultCount").textContent = `${visible.length} result${visible.length === 1 ? "" : "s"}`;
+      if (!visible.length) {
+        $("articleList").innerHTML = '<div class="empty">No matching publications.</div>';
+        return;
+      }
+      $("articleList").innerHTML = visible.map((article) => {
+        const record = getRecord(article.pmid);
+        const authors = article.authors.length ? article.authors.join(", ") : "No authors listed";
+        const status = record.emailed ? '<span class="pill sent">Emailed</span>' : '<span class="pill unsent">Not emailed</span>';
+        return `
+          <article class="article ${state.selectedPmid === article.pmid ? "selected" : ""}" data-pmid="${article.pmid}">
+            <div class="article-top">
+              <div>
+                <h3>${escapeHtml(article.title)}</h3>
+                <div class="meta">
+                  <span>${escapeHtml(article.journal || "Journal not listed")}</span>
+                  <span>${escapeHtml(article.pubdate || "Date not listed")}</span>
+                  <span>PMID ${escapeHtml(article.pmid)}</span>
+                </div>
+              </div>
+              <div class="row-actions">
+                <span class="pill topic">${escapeHtml(article.topicLabel)}</span>
+                ${status}
+              </div>
+            </div>
+            <div class="meta">${escapeHtml(authors)}</div>
+            <div class="row-actions">
+              <label class="checkline"><input type="checkbox" data-include="${article.pmid}" ${record.include ? "checked" : ""} /> Include</label>
+              <label class="checkline"><input type="checkbox" data-emailed="${article.pmid}" ${record.emailed ? "checked" : ""} /> Emailed</label>
+              <button data-select="${article.pmid}">Edit</button>
+              <a href="https://pubmed.ncbi.nlm.nih.gov/${article.pmid}/" target="_blank" rel="noopener"><button type="button">PubMed</button></a>
+            </div>
+          </article>
+        `;
+      }).join("");
 
-// ─── MISC ─────────────────────────────────────────────────────────────────────
-function clearAll() {
-  if (!confirm('Clear all articles from this session? This cannot be undone.')) return;
-  articles = [];
-  digestQueue = [];
-  localStorage.removeItem('pubMonitorArticles');
-  applyFilters();
-  updateStats();
-  updateTopicCounts();
-  renderDigestQueue();
-  toast('Cleared');
-}
+      document.querySelectorAll("[data-select], .article").forEach((element) => {
+        element.addEventListener("click", (event) => {
+          if (event.target.closest("a, button, input")) return;
+          state.selectedPmid = element.dataset.pmid || element.dataset.select;
+          render();
+        });
+      });
+      document.querySelectorAll("[data-select]").forEach((button) => {
+        button.addEventListener("click", () => {
+          state.selectedPmid = button.dataset.select;
+          render();
+        });
+      });
+      document.querySelectorAll("[data-include]").forEach((input) => {
+        input.addEventListener("change", () => {
+          getRecord(input.dataset.include).include = input.checked;
+          saveState();
+          renderStatsAndEmail();
+        });
+      });
+      document.querySelectorAll("[data-emailed]").forEach((input) => {
+        input.addEventListener("change", () => {
+          getRecord(input.dataset.emailed).emailed = input.checked;
+          saveState();
+          render();
+        });
+      });
+    }
 
-// ─── API KEY ─────────────────────────────────────────────────────────────────
-function openApiModal() {
-  document.getElementById('api-key-input').value = apiKey;
-  document.getElementById('api-modal-overlay').classList.add('open');
-}
-function closeApiModal() {
-  document.getElementById('api-modal-overlay').classList.remove('open');
-}
-function saveApiKey() {
-  const val = document.getElementById('api-key-input').value.trim();
-  if (!val) { toast('Enter a Gemini key', 'error'); return; }
-  apiKey = val;
-  localStorage.setItem('openrouterApiKey', val);
-  document.getElementById('api-key-btn').textContent = '⚙ AI Setup ✓';
-  closeApiModal();
-  toast('OpenRouter key saved ✓', 'success');
-}
+    function renderEditor() {
+      const article = state.articles.find((item) => item.pmid === state.selectedPmid);
+      $("editor").hidden = !article;
+      $("editorEmpty").hidden = Boolean(article);
+      if (!article) return;
 
-// ─── TOAST ────────────────────────────────────────────────────────────────────
-let toastTimer;
-function toast(msg, type='') {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.className = `show ${type}`;
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => { el.className = ''; }, 3000);
-}
-</script>
+      const record = getRecord(article.pmid);
+      $("selectedTitle").textContent = article.title;
+      $("selectedMeta").innerHTML = `
+        <span class="pill topic">${escapeHtml(article.topicLabel)}</span>
+        <span>${escapeHtml(article.journal || "Journal not listed")}</span>
+        <span>${escapeHtml(article.pubdate || "Date not listed")}</span>
+        <span>PMID ${escapeHtml(article.pmid)}</span>
+      `;
+      $("includeInEmail").checked = record.include;
+      $("emailed").checked = record.emailed;
+      $("referenceText").value = record.reference || buildReference(article);
+      $("keyMessage").value = record.keyMessage || "";
+      $("notes").value = record.notes || "";
+      $("abstractText").textContent = article.abstract || "No abstract found in PubMed.";
+    }
+
+    function renderStatsAndEmail() {
+      const total = state.articles.length;
+      const selected = state.articles.filter((article) => getRecord(article.pmid).include).length;
+      const sent = state.articles.filter((article) => getRecord(article.pmid).emailed).length;
+      $("statTotal").textContent = total;
+      $("statSelected").textContent = selected;
+      $("statUnsent").textContent = total - sent;
+      $("statSent").textContent = sent;
+      renderEmail();
+    }
+
+    function includedArticles() {
+      return state.articles.filter((article) => getRecord(article.pmid).include);
+    }
+
+    function groupedIncludedArticles() {
+      return TOPICS.map((topic) => ({
+        ...topic,
+        articles: state.articles.filter((article) => article.topicId === topic.id && getRecord(article.pmid).include)
+      }));
+    }
+
+    function sectionTitle(topic) {
+      if (topic.id === "y90") return "Y90 / TARE / SIRT";
+      if (topic.id === "cryo") return "Cryoablation";
+      return topic.label;
+    }
+
+    function monthYearLabel() {
+      const dateValue = $("endDate").value || $("startDate").value;
+      const date = dateValue ? new Date(`${dateValue}T00:00:00`) : new Date();
+      return date.toLocaleString("en-US", { month: "long", year: "numeric" });
+    }
+
+    function subjectFocus() {
+      const included = includedArticles();
+      if (!included.length) return "No New Articles";
+      if (included.length === 1) {
+        const article = included[0];
+        const words = article.title
+          .replace(/[^\w\s-]/g, "")
+          .split(/\s+/)
+          .filter((word) => word.length > 3)
+          .slice(0, 5)
+          .join(" ");
+        return words || article.topicLabel;
+      }
+      const topicLabels = [...new Set(included.map((article) => article.topicLabel.split(",")[0]))];
+      return `${included.length} Articles: ${topicLabels.join(", ")}`;
+    }
+
+    function emailSubject() {
+      const prefix = $("emailTitle").value || "Monthly Literature Update";
+      return `${prefix}: ${monthYearLabel()} - ${subjectFocus()}`;
+    }
+
+    function searchScopeSentence(total) {
+      const topicText = "Y90 / TARE / SIRT, DEB-TACE, and cryoablation";
+      const articleText = total === 1 ? "one article" : `${total} articles`;
+      if (total === 0) {
+        return `This month's search scope focused on emerging literature in interventional radiology and oncology, specifically highlighting ${topicText}, with no articles selected for this update.`;
+      }
+      return `This month's search scope focused on emerging literature in interventional radiology and oncology, specifically highlighting ${topicText}, with a total of ${articleText} found.`;
+    }
+
+    function articleSummary(record) {
+      return record.notes || record.keyMessage || "Summary pending.";
+    }
+
+    function renderEmail() {
+      const selected = includedArticles();
+      const groups = groupedIncludedArticles();
+      $("emailPreview").innerHTML = `
+        <p><strong>SUBJECT:</strong> ${escapeHtml(emailSubject())}</p>
+        <p>Dear Team,</p>
+        <p>${escapeHtml(searchScopeSentence(selected.length))}</p>
+        ${groups.map((group) => `
+          <p><strong>--- ${escapeHtml(sectionTitle(group))} ---</strong></p>
+          ${group.articles.length ? group.articles.map((article) => {
+              const record = getRecord(article.pmid);
+              return `
+                <p><strong>${escapeHtml(article.title)}</strong> (<a href="https://pubmed.ncbi.nlm.nih.gov/${article.pmid}/">https://pubmed.ncbi.nlm.nih.gov/${article.pmid}/</a>)</p>
+                <p><strong>Summary:</strong> ${escapeHtml(articleSummary(record))}</p>
+                <p><strong>Reference:</strong> ${escapeHtml(record.reference || buildReference(article))}</p>
+              `;
+            }).join("") : "<p>No articles found for this section.</p>"}
+        `).join("")}
+        <p>I am available to discuss these publications at our next team meeting or share the full PDF of any article upon request.</p>
+        <p>Best regards,<br>Medical Affairs / MSL Team</p>
+      `;
+    }
+
+    function render() {
+      renderTabs();
+      renderArticles();
+      renderEditor();
+      renderStatsAndEmail();
+    }
+
+    function updateSelectedRecord() {
+      const article = state.articles.find((item) => item.pmid === state.selectedPmid);
+      if (!article) return;
+      const record = getRecord(article.pmid);
+      record.include = $("includeInEmail").checked;
+      record.emailed = $("emailed").checked;
+      record.reference = $("referenceText").value;
+      record.keyMessage = $("keyMessage").value;
+      record.notes = $("notes").value;
+      saveState();
+      renderStatsAndEmail();
+    }
+
+    function draftKeyMessage(article) {
+      const abstract = (article.abstract || "").replace(/\s+/g, " ");
+      const conclusionMatch = abstract.match(/(?:CONCLUSIONS?|INTERPRETATION|RESULTS?):\s*([^]+?)(?:\n\n[A-Z ]{3,}:|$)/i);
+      const source = conclusionMatch ? conclusionMatch[1] : abstract;
+      const sentence = source.split(/(?<=[.!?])\s+/).find((part) => part.length > 70) || source.slice(0, 280);
+      return sentence ? sentence.trim().slice(0, 420) : "Review full article for clinical relevance.";
+    }
+
+    function buildAiPrompt(article) {
+      return `Please summarize this PubMed article for a monthly interventional oncology publication update.
+
+Return:
+1. One-sentence key message for clinicians
+2. Why it matters
+3. Patient population and study type
+4. Main outcomes
+5. Limitations or cautions
+6. One short email-ready summary
+
+Title: ${article.title}
+Journal/date: ${article.journal}, ${article.pubdate}
+PMID: ${article.pmid}
+Abstract:
+${article.abstract}`;
+    }
+
+    async function summarizeWithAiEndpoint(article) {
+      const endpoint = $("aiEndpoint").value.trim();
+      if (!endpoint) {
+        showToast("Add a secure AI endpoint URL first.");
+        return null;
+      }
+      setLoading(true, `Summarizing PMID ${article.pmid}`);
+      try {
+        const response = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            prompt: buildAiPrompt(article),
+            article: {
+              pmid: article.pmid,
+              title: article.title,
+              journal: article.journal,
+              pubdate: article.pubdate,
+              abstract: article.abstract
+            }
+          })
+        });
+        if (!response.ok) throw new Error(`AI endpoint failed: ${response.status}`);
+        const data = await response.json();
+        return {
+          keyMessage: data.keyMessage || data.key_message || "",
+          summary: data.summary || data.notes || data.text || ""
+        };
+      } catch (error) {
+        console.error(error);
+        showToast(error.message || "AI summary failed.");
+        return null;
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    async function summarizeSelectedArticle() {
+      const article = state.articles.find((item) => item.pmid === state.selectedPmid);
+      if (!article) return;
+      const result = await summarizeWithAiEndpoint(article);
+      if (!result) return;
+      const record = getRecord(article.pmid);
+      if (result.keyMessage) record.keyMessage = result.keyMessage;
+      if (result.summary) record.notes = result.summary;
+      saveState();
+      render();
+      showToast("AI summary added.");
+    }
+
+    async function summarizeIncludedArticles() {
+      const articles = state.articles.filter((article) => {
+        const record = getRecord(article.pmid);
+        return record.include && (!record.keyMessage || !record.notes);
+      });
+      if (!articles.length) {
+        showToast("No included articles need summaries.");
+        return;
+      }
+      for (const article of articles) {
+        const result = await summarizeWithAiEndpoint(article);
+        if (!result) break;
+        const record = getRecord(article.pmid);
+        if (result.keyMessage) record.keyMessage = result.keyMessage;
+        if (result.summary) record.notes = result.summary;
+        saveState();
+        render();
+      }
+      showToast("Included AI summaries complete.");
+    }
+
+    function getPlainEmailText() {
+      const selected = includedArticles();
+      const lines = [
+        `SUBJECT: ${emailSubject()}`,
+        "",
+        "Dear Team,",
+        "",
+        searchScopeSentence(selected.length),
+        ""
+      ];
+      groupedIncludedArticles().forEach((group) => {
+        lines.push(`--- ${sectionTitle(group)} ---`);
+        lines.push("");
+        if (!group.articles.length) {
+          lines.push("No articles found for this section.");
+          lines.push("");
+          return;
+        }
+        group.articles.forEach((article) => {
+          const record = getRecord(article.pmid);
+          lines.push(`${article.title} (https://pubmed.ncbi.nlm.nih.gov/${article.pmid}/)`);
+          lines.push(`Summary: ${articleSummary(record)}`);
+          lines.push(`Reference: ${record.reference || buildReference(article)}`);
+          lines.push("");
+        });
+      });
+      lines.push("I am available to discuss these publications at our next team meeting or share the full PDF of any article upon request.");
+      lines.push("");
+      lines.push("Best regards,");
+      lines.push("Medical Affairs / MSL Team");
+      return lines.join("\n");
+    }
+
+    async function copyHtmlEmail() {
+      const html = $("emailPreview").innerHTML;
+      const text = getPlainEmailText();
+      try {
+        if (window.ClipboardItem) {
+          await navigator.clipboard.write([
+            new ClipboardItem({
+              "text/html": new Blob([html], { type: "text/html" }),
+              "text/plain": new Blob([text], { type: "text/plain" })
+            })
+          ]);
+        } else {
+          await navigator.clipboard.writeText(text);
+        }
+        showToast("Email copied.");
+      } catch {
+        await navigator.clipboard.writeText(text);
+        showToast("Plain text email copied.");
+      }
+    }
+
+    function exportData() {
+      const data = {
+        exportedAt: new Date().toISOString(),
+        dateRange: { start: $("startDate").value, end: $("endDate").value },
+        records: state.records,
+        articles: state.articles
+      };
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `publication-update-${new Date().toISOString().slice(0, 10)}.json`;
+      link.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function importData(file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const data = JSON.parse(reader.result);
+          state.records = { ...state.records, ...(data.records || {}) };
+          if (Array.isArray(data.articles)) state.articles = data.articles;
+          if (data.dateRange?.start) $("startDate").value = data.dateRange.start;
+          if (data.dateRange?.end) $("endDate").value = data.dateRange.end;
+          saveState();
+          render();
+          showToast("Tracking data imported.");
+        } catch {
+          showToast("Could not import that JSON file.");
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function bindEvents() {
+      $("searchBtn").addEventListener("click", runSearch);
+      $("lastMonthBtn").addEventListener("click", () => { setPreviousMonth(); renderEmail(); });
+      $("thisMonthBtn").addEventListener("click", () => { setDefaultDates(); renderEmail(); });
+      document.querySelectorAll("[data-range-days]").forEach((button) => {
+        button.addEventListener("click", () => setRelativeRange(button.dataset.rangeDays));
+      });
+      $("clearFiltersBtn").addEventListener("click", () => { $("filterText").value = ""; state.activeTopic = "all"; render(); });
+      $("filterText").addEventListener("input", renderArticles);
+      $("emailTitle").addEventListener("input", () => { saveState(); renderEmail(); });
+      $("aiEndpoint").addEventListener("input", saveState);
+      ["includeInEmail", "emailed", "referenceText", "keyMessage", "notes"].forEach((id) => {
+        $(id).addEventListener("input", updateSelectedRecord);
+        $(id).addEventListener("change", () => { updateSelectedRecord(); render(); });
+      });
+      $("openPubmedBtn").addEventListener("click", () => {
+        if (state.selectedPmid) window.open(`https://pubmed.ncbi.nlm.nih.gov/${state.selectedPmid}/`, "_blank", "noopener");
+      });
+      $("draftKeyMessageBtn").addEventListener("click", () => {
+        const article = state.articles.find((item) => item.pmid === state.selectedPmid);
+        if (!article) return;
+        $("keyMessage").value = draftKeyMessage(article);
+        updateSelectedRecord();
+        render();
+      });
+      $("copyAiPromptBtn").addEventListener("click", async () => {
+        const article = state.articles.find((item) => item.pmid === state.selectedPmid);
+        if (!article) return;
+        await navigator.clipboard.writeText(buildAiPrompt(article));
+        showToast("AI prompt copied.");
+      });
+      $("summarizeAiBtn").addEventListener("click", summarizeSelectedArticle);
+      $("summarizeIncludedBtn").addEventListener("click", summarizeIncludedArticles);
+      $("copyEmailBtn").addEventListener("click", copyHtmlEmail);
+      $("copyPlainBtn").addEventListener("click", async () => {
+        await navigator.clipboard.writeText(getPlainEmailText());
+        showToast("Plain text copied.");
+      });
+      $("markEmailSentBtn").addEventListener("click", () => {
+        state.articles.forEach((article) => {
+          const record = getRecord(article.pmid);
+          if (record.include) record.emailed = true;
+        });
+        saveState();
+        render();
+        showToast("Included publications marked as emailed.");
+      });
+      $("exportBtn").addEventListener("click", exportData);
+      $("importBtn").addEventListener("click", () => $("importFile").click());
+      $("importFile").addEventListener("change", (event) => {
+        if (event.target.files[0]) importData(event.target.files[0]);
+      });
+    }
+
+    loadState();
+    setPreviousMonth();
+    bindEvents();
+    render();
+  </script>
 </body>
 </html>
