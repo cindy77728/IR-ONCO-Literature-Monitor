@@ -59,7 +59,7 @@
     button:disabled { opacity: 0.55; cursor: not-allowed; }
 
     .app {
-      max-width: 1500px;
+      max-width: 1680px;
       margin: 0 auto;
       padding: 28px;
     }
@@ -138,7 +138,7 @@
 
     .layout {
       display: grid;
-      grid-template-columns: minmax(0, 1.25fr) minmax(380px, 0.75fr);
+      grid-template-columns: minmax(0, 1.6fr) minmax(360px, 0.7fr);
       gap: 18px;
       align-items: start;
     }
@@ -1006,8 +1006,8 @@
       return `This month's search scope focused on emerging literature in interventional radiology and oncology, specifically highlighting ${topicText}, with a total of ${articleText} found.`;
     }
 
-    function articleSummary(record) {
-      return record.notes || record.keyMessage || "Summary pending.";
+    function articleSummary(article, record) {
+      return record.notes || record.keyMessage || draftKeyMessage(article);
     }
 
     function renderEmail() {
@@ -1023,7 +1023,7 @@
               const record = getRecord(article.pmid);
               return `
                 <p><strong>${escapeHtml(article.title)}</strong> (<a href="https://pubmed.ncbi.nlm.nih.gov/${article.pmid}/">https://pubmed.ncbi.nlm.nih.gov/${article.pmid}/</a>)</p>
-                <p><strong>Summary:</strong> ${escapeHtml(articleSummary(record))}</p>
+                <p><strong>Summary:</strong> ${escapeHtml(articleSummary(article, record))}</p>
                 <p><strong>Reference:</strong> ${escapeHtml(record.reference || buildReference(article))}</p>
               `;
             }).join("") : "<p>No articles found for this section.</p>"}
@@ -1171,7 +1171,7 @@ ${article.abstract}`;
         group.articles.forEach((article) => {
           const record = getRecord(article.pmid);
           lines.push(`${article.title} (https://pubmed.ncbi.nlm.nih.gov/${article.pmid}/)`);
-          lines.push(`Summary: ${articleSummary(record)}`);
+          lines.push(`Summary: ${articleSummary(article, record)}`);
           lines.push(`Reference: ${record.reference || buildReference(article)}`);
           lines.push("");
         });
