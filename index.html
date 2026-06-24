@@ -845,6 +845,9 @@
           }
         });
         state.articles = Array.from(merged.values());
+        state.articles.forEach((article) => {
+          getRecord(article.pmid).include = true;
+        });
         state.selectedPmid = state.articles[0]?.pmid || null;
         saveState();
         render();
