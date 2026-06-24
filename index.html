@@ -751,16 +751,27 @@
 <div class="modal-overlay" id="api-modal-overlay">
   <div class="modal api-modal">
     <div class="modal-header">
-      <div class="modal-title">⚙ Claude API Key</div>
+      <div class="modal-title">⚙ AI Setup (Free)</div>
       <button class="close-btn" onclick="closeApiModal()">✕</button>
     </div>
     <div class="modal-body">
-      <p class="api-note">Your API key is stored only in your browser's localStorage. It is never sent anywhere except directly to the Anthropic API for AI summarization.</p>
-      <div>
-        <div class="field-label required">Anthropic API Key</div>
-        <input type="password" id="api-key-input" placeholder="sk-ant-..." />
+      <p class="api-note" style="color:var(--green);border:1px solid rgba(34,197,94,0.2);background:rgba(34,197,94,0.07);padding:8px 10px;border-radius:5px;">
+        ✓ Uses <strong>Google Gemini</strong> — free tier, no credit card needed.
+      </p>
+      <div style="margin-top:4px;">
+        <div class="field-label required">Gemini API Key</div>
+        <input type="password" id="api-key-input" placeholder="AIza..." />
       </div>
-      <p class="api-note">Don't have a key? <a href="https://console.anthropic.com" target="_blank">console.anthropic.com →</a></p>
+      <div style="margin-top:6px;">
+        <p class="api-note">
+          <strong>How to get a free key (2 minutes):</strong><br>
+          1. Go to <a href="https://aistudio.google.com/app/apikey" target="_blank">aistudio.google.com/app/apikey →</a><br>
+          2. Sign in with your Google account<br>
+          3. Click <strong>Create API key</strong> → copy it<br>
+          4. Paste it above and save
+        </p>
+        <p class="api-note" style="margin-top:8px;">Free tier: 1,500 requests/day · No credit card needed.</p>
+      </div>
     </div>
     <div class="modal-footer">
       <button class="btn-secondary" onclick="closeApiModal()">Cancel</button>
@@ -778,7 +789,7 @@
   </div>
   <div class="header-right">
     <div class="cycle-badge" id="cycle-label">Loading...</div>
-    <button id="api-key-btn" onclick="openApiModal()">⚙ API Key</button>
+    <button id="api-key-btn" onclick="openApiModal()">⚙ AI Setup</button>
   </div>
 </header>
 
@@ -960,7 +971,7 @@ let filteredArticles = [];
 let currentFilter = 'all';
 let currentSort = 'date-desc';
 let textFilter = '';
-let apiKey = localStorage.getItem('claudeApiKey') || '';
+let apiKey = localStorage.getItem('geminiApiKey') || '';
 
 const TOPICS = {
   y90:  { label: 'Y90/TARE', query: 'Y90 radioembolization SIRT TARE hepatocellular carcinoma liver', color: 'y90' },
@@ -974,7 +985,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setRange(1);
   loadSaved();
   updateStats();
-  if (apiKey) document.getElementById('api-key-btn').textContent = '⚙ API Key ✓';
+  if (apiKey) document.getElementById('api-key-btn').textContent = '⚙ AI Setup ✓';
 });
 
 function updateCycleLabel() {
@@ -1424,8 +1435,25 @@ function markSelectedSent() {
 }
 
 // ─── AI SUMMARIZE ─────────────────────────────────────────────────────────────
+// ─── GEMINI API CALL ─────────────────────────────────────────────────────────
+async function callGemini(prompt) {
+  if (!apiKey) throw new Error('No API key set');
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      contents: [{ parts: [{ text: prompt }] }],
+      generationConfig: { maxOutputTokens: 1024, temperature: 0.4 }
+    })
+  });
+  const data = await response.json();
+  if (data.error) throw new Error(data.error.message);
+  return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+}
+
 async function summarizeOne(pmid) {
-  if (!apiKey) { openApiModal(); toast('Set your API key first', 'error'); return; }
+  if (!apiKey) { openApiModal(); toast('Set up your free Gemini key first', 'error'); return; }
   const art = articles.find(a => a.pmid === pmid);
   if (!art) return;
 
@@ -1460,20 +1488,7 @@ KEY FINDINGS:
 • [Third key finding if applicable]
 • [Clinical implication for interventional oncology practice]`;
 
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 1000,
-        messages: [{ role: 'user', content: prompt }]
-      })
-    });
-
-    const data = await response.json();
-    if (data.error) throw new Error(data.error.message);
-
-    const text = data.content?.map(c => c.text || '').join('') || '';
+    const text = await callGemini(prompt);
     const summaryMatch = text.match(/SUMMARY:\s*([\s\S]+?)(?=KEY FINDINGS:|$)/i);
     const findingsMatch = text.match(/KEY FINDINGS:\s*([\s\S]+?)$/i);
 
@@ -1616,7 +1631,7 @@ function renderDigestQueue() {
 
 async function generateDigest() {
   if (!digestQueue.length) { toast('Add articles to the queue first', 'error'); return; }
-  if (!apiKey) { openApiModal(); toast('Set your API key first', 'error'); return; }
+  if (!apiKey) { openApiModal(); toast('Set up your free Gemini key first', 'error'); return; }
 
   const toSend = digestQueue.map(pmid => articles.find(a => a.pmid === pmid)).filter(Boolean);
 
@@ -1710,18 +1725,7 @@ ${articleBlock}
 ${formatPrompts[digestFormat]}`;
 
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 1000,
-        messages: [{ role: 'user', content: prompt }]
-      })
-    });
-    const data = await response.json();
-    if (data.error) throw new Error(data.error.message);
-    const text = data.content?.map(c => c.text || '').join('') || '';
+    const text = await callGemini(prompt);
 
     // Auto-fill subject if found
     const subjectMatch = text.match(/^SUBJECT:\s*(.+)/m);
@@ -1794,12 +1798,12 @@ function closeApiModal() {
 }
 function saveApiKey() {
   const val = document.getElementById('api-key-input').value.trim();
-  if (!val) { toast('Enter a key', 'error'); return; }
+  if (!val) { toast('Enter a Gemini key', 'error'); return; }
   apiKey = val;
-  localStorage.setItem('claudeApiKey', val);
-  document.getElementById('api-key-btn').textContent = '⚙ API Key ✓';
+  localStorage.setItem('geminiApiKey', val);
+  document.getElementById('api-key-btn').textContent = '⚙ AI Setup ✓';
   closeApiModal();
-  toast('API key saved', 'success');
+  toast('Gemini API key saved ✓', 'success');
 }
 
 // ─── TOAST ────────────────────────────────────────────────────────────────────
