@@ -1116,16 +1116,25 @@
         ${introParagraphs(selected.length).map((paragraph) => `<p style="margin:0 0 12px 0;">${escapeHtml(paragraph)}</p>`).join("")}
         ${groups.map((group) => `
           <div class="email-section-title" style="margin:24px 0 12px 0; padding:8px 10px; border-left:4px solid #1f7a8c; background:#f3f8f9; font-weight:700; color:#135c6b;">${escapeHtml(sectionTitle(group))}</div>
-          ${group.articles.length ? group.articles.map((article) => {
+          ${group.articles.length ? `
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse; width:100%;">
+              ${group.articles.map((article) => {
               const record = getRecord(article.pmid);
               return `
-                <div class="email-article" style="margin:0 0 22px 0; padding:0 0 18px 0; border-bottom:1px solid #d8dde6;">
-                  <div class="email-article-title" style="font-weight:700; margin:0 0 8px 0;">${escapeHtml(article.title)}</div>
-                  <div class="email-summary" style="margin:0 0 8px 0; color:#344054;"><strong>Summary:</strong> ${escapeHtml(articleSummary(article, record))}</div>
-                  <div class="email-link" style="margin:0 0 2px 0; font-size:13px;"><a href="https://pubmed.ncbi.nlm.nih.gov/${article.pmid}/">PubMed PMID ${escapeHtml(article.pmid)}</a></div>
-                </div>
+                <tr>
+                  <td style="padding:0 0 16px 0; border-bottom:1px solid #d8dde6;">
+                    <div class="email-article-title" style="font-weight:700; margin:0 0 8px 0;">${escapeHtml(article.title)}</div>
+                    <div class="email-summary" style="margin:0 0 8px 0; color:#344054;"><strong>Summary:</strong> ${escapeHtml(articleSummary(article, record))}</div>
+                    <div class="email-link" style="margin:0 0 2px 0; font-size:13px;"><a href="https://pubmed.ncbi.nlm.nih.gov/${article.pmid}/">PubMed PMID ${escapeHtml(article.pmid)}</a></div>
+                  </td>
+                </tr>
+                <tr>
+                  <td height="18" style="height:18px; line-height:18px; font-size:18px;">&nbsp;</td>
+                </tr>
               `;
-            }).join("") : '<div class="email-empty" style="margin:0 0 18px 0; color:#667085; font-style:italic;">No articles found for this section.</div>'}
+            }).join("")}
+            </table>
+          ` : '<div class="email-empty" style="margin:0 0 18px 0; color:#667085; font-style:italic;">No articles found for this section.</div>'}
         `).join("")}
         <div class="email-footer" style="margin-top:22px; padding-top:14px; border-top:1px solid #d8dde6;">
           <p style="margin:0 0 12px 0;">Best regards,<br>Medical Affairs / MSL Team</p>
