@@ -387,24 +387,75 @@
     .email-preview {
       border: 1px solid var(--line);
       border-radius: 8px;
-      padding: 12px;
+      padding: 18px;
       background: #fff;
       flex: 1;
       min-height: 420px;
       max-height: none;
       overflow: auto;
-      line-height: 1.48;
+      line-height: 1.55;
     }
 
-    .email-preview h3 {
-      margin: 18px 0 8px;
-      font-size: 17px;
+    .email-preview .email-subject {
+      color: var(--muted);
+      font-size: 13px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 10px;
+      margin-bottom: 16px;
     }
 
-    .email-preview h3:first-child { margin-top: 0; }
-    .email-preview p { margin: 7px 0; }
-    .email-preview ol { padding-left: 24px; margin: 8px 0 12px; }
-    .email-preview li { margin-bottom: 12px; }
+    .email-preview p { margin: 8px 0; }
+
+    .email-section-title {
+      margin: 22px 0 10px;
+      padding: 8px 10px;
+      border-left: 4px solid var(--accent);
+      background: #f3f8f9;
+      font-weight: 800;
+      color: #135c6b;
+    }
+
+    .email-article {
+      padding: 12px 0 14px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .email-article:last-child {
+      border-bottom: 0;
+    }
+
+    .email-article-title {
+      font-weight: 800;
+      margin-bottom: 7px;
+    }
+
+    .email-summary {
+      color: #344054;
+      margin: 6px 0;
+    }
+
+    .email-link {
+      font-size: 13px;
+      margin-top: 7px;
+    }
+
+    .email-empty {
+      color: var(--muted);
+      font-style: italic;
+      padding: 8px 0 10px;
+    }
+
+    .email-footer {
+      margin-top: 18px;
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
+    }
+
+    .email-disclaimer {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
 
     .notice {
       color: var(--muted);
@@ -1059,21 +1110,26 @@
       const selected = includedArticles();
       const groups = groupedIncludedArticles();
       $("emailPreview").innerHTML = `
-        <p><strong>SUBJECT:</strong> ${escapeHtml(emailSubject())}</p>
+        <p class="email-subject"><strong>SUBJECT:</strong> ${escapeHtml(emailSubject())}</p>
         <p>Hi Team,</p>
         ${introParagraphs(selected.length).map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join("")}
         ${groups.map((group) => `
-          <p><strong>--- ${escapeHtml(sectionTitle(group))} ---</strong></p>
+          <div class="email-section-title">${escapeHtml(sectionTitle(group))}</div>
           ${group.articles.length ? group.articles.map((article) => {
               const record = getRecord(article.pmid);
               return `
-                <p><strong>${escapeHtml(article.title)}</strong> (<a href="https://pubmed.ncbi.nlm.nih.gov/${article.pmid}/">https://pubmed.ncbi.nlm.nih.gov/${article.pmid}/</a>)</p>
-                <p><strong>Summary:</strong> ${escapeHtml(articleSummary(article, record))}</p>
+                <div class="email-article">
+                  <div class="email-article-title">${escapeHtml(article.title)}</div>
+                  <div class="email-summary"><strong>Summary:</strong> ${escapeHtml(articleSummary(article, record))}</div>
+                  <div class="email-link"><a href="https://pubmed.ncbi.nlm.nih.gov/${article.pmid}/">PubMed PMID ${escapeHtml(article.pmid)}</a></div>
+                </div>
               `;
-            }).join("") : "<p>No articles found for this section.</p>"}
+            }).join("") : '<div class="email-empty">No articles found for this section.</div>'}
         `).join("")}
-        <p>Best regards,<br>Medical Affairs / MSL Team</p>
-        <p><em>Disclaimer: Publication summaries were generated or assisted by AI based on PubMed abstracts and available citation information. Please review the source article before using the summary for medical, scientific, regulatory, or external communication purposes.</em></p>
+        <div class="email-footer">
+          <p>Best regards,<br>Medical Affairs / MSL Team</p>
+          <p class="email-disclaimer"><em>Disclaimer: Publication summaries were generated or assisted by AI based on PubMed abstracts and available citation information. Please review the source article before using the summary for medical, scientific, regulatory, or external communication purposes.</em></p>
+        </div>
       `;
     }
 
@@ -1245,8 +1301,9 @@ ${article.abstract}`;
         }
         group.articles.forEach((article) => {
           const record = getRecord(article.pmid);
-          lines.push(`${article.title} (https://pubmed.ncbi.nlm.nih.gov/${article.pmid}/)`);
+          lines.push(article.title);
           lines.push(`Summary: ${articleSummary(article, record)}`);
+          lines.push(`PubMed: https://pubmed.ncbi.nlm.nih.gov/${article.pmid}/`);
           lines.push("");
         });
       });
