@@ -612,7 +612,7 @@
       {
         id: "y90",
         label: "Y90",
-        query: '("Yttrium-90"[Title/Abstract] OR "Y-90"[Title/Abstract] OR radioembolization[Title/Abstract] OR "selective internal radiation therapy"[Title/Abstract] OR SIRT[Title/Abstract])'
+        query: '(("Yttrium-90"[Title/Abstract] OR "Y-90"[Title/Abstract] OR "90Y"[Title/Abstract] OR radioembolization[Title/Abstract] OR "selective internal radiation therapy"[Title/Abstract] OR "selective internal radiotherapy"[Title/Abstract] OR "transarterial radioembolization"[Title/Abstract] OR TARE[Title/Abstract]) AND (tumor*[Title/Abstract] OR tumour*[Title/Abstract] OR cancer*[Title/Abstract] OR carcinoma[Title/Abstract] OR metastas*[Title/Abstract] OR hepatocellular[Title/Abstract] OR hepatic[Title/Abstract] OR liver[Title/Abstract] OR oncology[Title/Abstract])) NOT (sirtuin[Title/Abstract] OR SIRT1[Title/Abstract] OR SIRT2[Title/Abstract] OR SIRT3[Title/Abstract] OR SIRT4[Title/Abstract] OR SIRT5[Title/Abstract] OR SIRT6[Title/Abstract] OR SIRT7[Title/Abstract])'
       },
       {
         id: "deb-tace",
@@ -622,7 +622,7 @@
       {
         id: "cryo",
         label: "Cryoablation",
-        query: '(cryoablation[Title/Abstract] OR "cryo ablation"[Title/Abstract] OR cryotherapy[Title/Abstract])'
+        query: '((cryoablation[Title/Abstract] OR "cryo ablation"[Title/Abstract] OR cryosurgery[Title/Abstract] OR "percutaneous cryoablation"[Title/Abstract]) AND (tumor*[Title/Abstract] OR tumour*[Title/Abstract] OR cancer*[Title/Abstract] OR carcinoma[Title/Abstract] OR malignan*[Title/Abstract] OR metastas*[Title/Abstract] OR oncolog*[Title/Abstract] OR "renal mass"[Title/Abstract] OR liver[Title/Abstract] OR lung[Title/Abstract] OR bone[Title/Abstract])) NOT ("atrial fibrillation"[Title/Abstract] OR arrhythmia*[Title/Abstract] OR "pulmonary vein"[Title/Abstract] OR cryoballoon[Title/Abstract] OR cardiac[Title/Abstract] OR analgesia[Title/Abstract] OR epidural[Title/Abstract] OR mucositis[Title/Abstract] OR dental[Title/Abstract] OR tooth[Title/Abstract] OR molar[Title/Abstract])'
       }
     ];
 
@@ -1069,7 +1069,6 @@
               return `
                 <p><strong>${escapeHtml(article.title)}</strong> (<a href="https://pubmed.ncbi.nlm.nih.gov/${article.pmid}/">https://pubmed.ncbi.nlm.nih.gov/${article.pmid}/</a>)</p>
                 <p><strong>Summary:</strong> ${escapeHtml(articleSummary(article, record))}</p>
-                <p><strong>Reference:</strong> ${escapeHtml(record.reference || buildReference(article))}</p>
               `;
             }).join("") : "<p>No articles found for this section.</p>"}
         `).join("")}
@@ -1248,7 +1247,6 @@ ${article.abstract}`;
           const record = getRecord(article.pmid);
           lines.push(`${article.title} (https://pubmed.ncbi.nlm.nih.gov/${article.pmid}/)`);
           lines.push(`Summary: ${articleSummary(article, record)}`);
-          lines.push(`Reference: ${record.reference || buildReference(article)}`);
           lines.push("");
         });
       });
