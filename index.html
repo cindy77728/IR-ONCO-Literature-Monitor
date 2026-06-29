@@ -416,7 +416,8 @@
     }
 
     .email-article {
-      padding: 12px 0 14px;
+      padding: 18px 0 20px;
+      margin-bottom: 4px;
       border-bottom: 1px solid var(--line);
     }
 
@@ -1304,6 +1305,7 @@ ${article.abstract}`;
           lines.push(article.title);
           lines.push(`Summary: ${articleSummary(article, record)}`);
           lines.push(`PubMed: https://pubmed.ncbi.nlm.nih.gov/${article.pmid}/`);
+          lines.push("");
           lines.push("");
         });
       });
