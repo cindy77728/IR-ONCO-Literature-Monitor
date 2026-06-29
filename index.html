@@ -1111,25 +1111,25 @@
       const selected = includedArticles();
       const groups = groupedIncludedArticles();
       $("emailPreview").innerHTML = `
-        <p class="email-subject"><strong>SUBJECT:</strong> ${escapeHtml(emailSubject())}</p>
-        <p>Hi Team,</p>
-        ${introParagraphs(selected.length).map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join("")}
+        <p class="email-subject" style="margin:0 0 16px 0; padding-bottom:10px; border-bottom:1px solid #d8dde6; color:#667085; font-size:13px;"><strong>SUBJECT:</strong> ${escapeHtml(emailSubject())}</p>
+        <p style="margin:0 0 12px 0;">Hi Team,</p>
+        ${introParagraphs(selected.length).map((paragraph) => `<p style="margin:0 0 12px 0;">${escapeHtml(paragraph)}</p>`).join("")}
         ${groups.map((group) => `
-          <div class="email-section-title">${escapeHtml(sectionTitle(group))}</div>
+          <div class="email-section-title" style="margin:24px 0 12px 0; padding:8px 10px; border-left:4px solid #1f7a8c; background:#f3f8f9; font-weight:700; color:#135c6b;">${escapeHtml(sectionTitle(group))}</div>
           ${group.articles.length ? group.articles.map((article) => {
               const record = getRecord(article.pmid);
               return `
-                <div class="email-article">
-                  <div class="email-article-title">${escapeHtml(article.title)}</div>
-                  <div class="email-summary"><strong>Summary:</strong> ${escapeHtml(articleSummary(article, record))}</div>
-                  <div class="email-link"><a href="https://pubmed.ncbi.nlm.nih.gov/${article.pmid}/">PubMed PMID ${escapeHtml(article.pmid)}</a></div>
+                <div class="email-article" style="margin:0 0 22px 0; padding:0 0 18px 0; border-bottom:1px solid #d8dde6;">
+                  <div class="email-article-title" style="font-weight:700; margin:0 0 8px 0;">${escapeHtml(article.title)}</div>
+                  <div class="email-summary" style="margin:0 0 8px 0; color:#344054;"><strong>Summary:</strong> ${escapeHtml(articleSummary(article, record))}</div>
+                  <div class="email-link" style="margin:0 0 2px 0; font-size:13px;"><a href="https://pubmed.ncbi.nlm.nih.gov/${article.pmid}/">PubMed PMID ${escapeHtml(article.pmid)}</a></div>
                 </div>
               `;
-            }).join("") : '<div class="email-empty">No articles found for this section.</div>'}
+            }).join("") : '<div class="email-empty" style="margin:0 0 18px 0; color:#667085; font-style:italic;">No articles found for this section.</div>'}
         `).join("")}
-        <div class="email-footer">
-          <p>Best regards,<br>Medical Affairs / MSL Team</p>
-          <p class="email-disclaimer"><em>Disclaimer: Publication summaries were generated or assisted by AI based on PubMed abstracts and available citation information. Please review the source article before using the summary for medical, scientific, regulatory, or external communication purposes.</em></p>
+        <div class="email-footer" style="margin-top:22px; padding-top:14px; border-top:1px solid #d8dde6;">
+          <p style="margin:0 0 12px 0;">Best regards,<br>Medical Affairs / MSL Team</p>
+          <p class="email-disclaimer" style="margin:0; color:#667085; font-size:12px; line-height:1.45;"><em>Disclaimer: Publication summaries were generated or assisted by AI based on PubMed abstracts and available citation information. Please review the source article before using the summary for medical, scientific, regulatory, or external communication purposes.</em></p>
         </div>
       `;
     }
